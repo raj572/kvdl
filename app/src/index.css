@@ -1,0 +1,255 @@
+@import url('https://fonts.googleapis.com/css2?family=Sansation:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Ephesis&display=swap');
+@import "tailwindcss";
+
+@font-face {
+  font-family: "arkhip";
+  src: url("/fonts/arkhip.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@theme {
+  --color-primary: #AF221F;
+  --color-background:#f8f0dd;
+  --color-foreground: #121212;
+  --color-foreground-light: #e9ddc1;
+}
+
+
+:root {
+    --font-arkhip: "arkhip", sans-serif;
+    --font-sansation: "Sansation", sans-serif;
+    --font-noto: "Noto Sans", sans-serif;
+    --font-ephe: "Ephesis", sans-serif;
+   --primary: #AF221F;
+   --background:#f8f0dd;
+   --foreground: #121212;
+   --foreground-light:#dbc38a;
+
+}
+
+body {
+    font-family: var(--font-noto);
+    background-color: var(--background);
+    color: var(--foreground);
+    overflow-x: hidden;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE + Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.transition-overlay {
+  overflow-x: hidden !important;
+}
+
+/* Image Slider in Project */
+/* CONTAINER */
+
+.thumb-track {
+  width: max-content;
+  animation: scroll-x 20s linear infinite;
+}
+
+
+/* Horizontal infinite scroll */
+@keyframes scroll-x {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ------------------------------- */
+/* DESKTOP / TABLET (vertical mode) */
+/* ------------------------------- */
+
+@media (min-width: 768px) {
+  .thumb-track {
+    animation: scroll-y 20s linear infinite;
+  }
+
+  .thumb-item {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+
+  /* Vertical infinite scroll */
+  @keyframes scroll-y {
+    0%   { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+  }
+}
+
+/* Project Item Images slider */
+.project-images-track {
+  display: inline-flex;
+  width: max-content;
+  animation: scroll-item-x 100s linear infinite;
+  gap: 1rem; /* optional spacing */
+}
+
+@keyframes scroll-item-x {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+
+/* Page Transition */
+.block{
+    flex:1;
+    height:100%;
+    background-color: var(--primary);
+    transform: scaleX(0);
+    transform-origin: left;
+}
+
+/* Burger Menu Button*/
+.burger:before,
+.burger:after{
+    content: "";
+    width: 40px;
+    height: 2px;
+    position: absolute;
+    background: white;
+    transition: all 250ms ease-out;
+    will-change: transform;
+}
+
+.burger:before{
+    transform: translateY(-3px);
+}
+
+.burger:after{
+    transform:translateY(3px);
+}
+
+.active.burger:before{
+    transform: translateY(0) rotate(45deg);
+}
+
+.active.burger:after{
+    transform: translateY(0) rotate(-45deg);
+}
+
+.menu-item{
+    display: flex;
+    cursor: pointer;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+}
+
+.menu-item p{
+    position: relative;
+    text-align: center;
+    will-change: transform;
+    transition: letter-spacing 0.3s;
+}
+
+.menu-item p:hover{
+    letter-spacing: 0.07em;
+}
+
+.menu-link {
+  position: relative;
+  font-size: 5vw;
+  transition: letter-spacing 0.3s;
+}
+
+
+
+/* Mobile */
+@media (max-width: 768px) {
+    .burger::before,
+    .burger::after {
+        width: 30px;
+    }
+}
+
+/* Contact Form Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Custom Select Dropdown Styling */
+select.custom-select option {
+  background-color: #121212;
+  color: #f8f0dd;
+  padding: 12px 16px;
+  font-family: var(--font-sansation);
+}
+
+select.custom-select option:hover,
+select.custom-select option:focus,
+select.custom-select option:checked {
+  background-color: #AF221F;
+  color: #f8f0dd;
+}
+
+/* Custom Dropdown Animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out;
+}
+
+/* Custom Scrollbar for Dropdown */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #AF221F;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #8a1b19;
+}
+
+/* Hide Scrollbar Completely */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* RedButton Hover Fix */
+.group:hover.bg-primary {
+  background-color: white !important;
+}
+
+.group:hover .text-background {
+  color: black !important;
+}
