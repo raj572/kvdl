@@ -1,6 +1,6 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import React, { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const Header = () => {
   const [open, setOpen] = useState("");
@@ -13,7 +13,7 @@ const Header = () => {
     { name: "Gallery", path: "/gallery" },
     { name: "About", path: "/about" },
     { name: "Blog", path: "/blog" },
-    { name: "Contact", path: "/contact"}
+    { name: "Contact", path: "/contact" }
   ];
 
   //Handle Burger Menu Click
@@ -126,9 +126,8 @@ const Header = () => {
         {/* BURGER BUTTON */}
         <div className="toggle-btn flex justify-end">
           <button
-            className={`burger flex justify-center items-center p-4 transition-all duration-300 cursor-pointer ${
-              open === "active" ? "active" : ""
-            }`}
+            className={`burger flex justify-center items-center p-4 transition-all duration-300 cursor-pointer ${open === "active" ? "active" : ""
+              }`}
             onClick={() => setOpen(open === "" ? "active" : "")}
           ></button>
         </div>
@@ -141,15 +140,15 @@ const Header = () => {
           clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)"
         }}
       >
-        <div className="overlay-menu font-[arkhip] fixed top-0 left-0 w-screen h-screen gap-8 uppercase text-4xl md:text-5xl lg:text-6xl font-bold flex flex-col justify-center items-center">
+        <div className="overlay-menu font-[arkhip] fixed top-0 left-0 w-screen h-screen gap-6 uppercase text-3xl md:text-4xl lg:text-5xl font-bold flex flex-col justify-center items-center">
 
           {menuItems.map((item) => (
-            <div key={item.path} className="menu-item relative">
-              <p onClick={(e) => handleNavClick(e, item.path)}>{item.name}</p>
+            <div key={item.path} className="menu-item relative group">
+              <p className="relative z-10 transition-transform duration-300 group-hover:scale-110" onClick={(e) => handleNavClick(e, item.path)}>{item.name}</p>
 
               {/* ACTIVE RED LINE */}
               <div
-                className="red-line h-2 bg-primary absolute top-1/2 -translate-y-1/2"
+                className="red-line h-3 bg-primary absolute left-0 bottom-1 -z-10"
                 data-active={currentPath === item.path}
               />
             </div>

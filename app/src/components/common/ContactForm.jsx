@@ -39,8 +39,13 @@ const ContactForm = () => {
 
         if (!formData.phone.trim()) {
             newErrors.phone = 'Phone number is required';
-        } else if (!/^\d{10}$/.test(formData.phone.replace(/\s/g, ''))) {
-            newErrors.phone = 'Phone number must be 10 digits';
+        } else {
+            // Remove spaces for validation, keep leading zeros intact
+            const cleanPhone = formData.phone.replace(/\s/g, '');
+            // Check if it's between 10-15 digits
+            if (!/^\d{10,15}$/.test(cleanPhone)) {
+                newErrors.phone = 'Phone number must be 10-15 digits';
+            }
         }
 
         if (!formData.subject.trim()) {
@@ -81,20 +86,46 @@ const ContactForm = () => {
         setSubmitStatus(null);
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Import the API service
+            const { submitContactForm } = await import('../../services/api');
 
-            setSubmitStatus('success');
-            setFormData({
-                name: '',
-                email: '',
-                phone: '',
-                subject: '',
-                message: '',
-                propertyType: ''
-            });
+            // Submit to backend API
+            const response = await submitContactForm(formData);
 
-            setTimeout(() => setSubmitStatus(null), 5000);
+            if (response.success !== false) {
+                setSubmitStatus('success');
+                setFormData({
+                    name: '',
+                    email: '',
+                    phone: '',
+                    subject: '',
+                    message: '',
+                    propertyType: ''
+                });
+
+                setTimeout(() => setSubmitStatus(null), 5000);
+            } else {
+                setSubmitStatus('error');
+                setTimeout(() => setSubmitStatus(null), 5000);
+            }
         } catch (error) {
+
+            // Check if it's a network error (backend not running)
+            if (!error.status) {
+                alert('Cannot connect to server. Please make sure the backend server is running at http://localhost:8000');
+            }
+
+            // Handle validation errors from backend
+            if (error.status === 422 && error.errors) {
+                const normalizedErrors = Object.fromEntries(
+                    Object.entries(error.errors).map(([field, messages]) => [
+                        field,
+                        Array.isArray(messages) ? messages[0] : messages
+                    ])
+                );
+                setErrors(normalizedErrors);
+            }
+
             setSubmitStatus('error');
             setTimeout(() => setSubmitStatus(null), 5000);
         } finally {
