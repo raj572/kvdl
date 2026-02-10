@@ -14,34 +14,30 @@ const ImageTextScroll = () => {
   useGSAP(() => {
     const columns = gsap.utils.toArray(".column1, .column2, .column3, .column4");
 
-
+    // Set initial positions
     gsap.set(".column1", { y: -800 });
     gsap.set(".column3", { y: -800 });
 
-    // Column movement (alternate directions)
-    const movements = [-100, -300, -100, -300];
+    const movements = [100, -300, 100, -300]; // Adjusted for clearer movement
 
-
-    ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: "top top",
-      end: "+=3000",
-      pin: true,
-      scrub: true,
+    // Create a timeline that pins the section and animates columns
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top top",
+        end: "+=1500", // Reduced duration for better UX
+        pin: true,
+        scrub: 1, // Smooth interaction
+        anticipatePin: 1,
+        refreshPriority: 1
+      }
     });
 
-    // Animate each column in opposite directions
     columns.forEach((col, i) => {
-      gsap.to(col, {
+      tl.to(col, {
         y: movements[i],
-        ease: "none",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top top",
-          end: "+=3000",
-          scrub: true,
-        },
-      });
+        ease: "none"
+      }, 0); // All animate together
     });
   });
 
@@ -61,7 +57,7 @@ const ImageTextScroll = () => {
         </div>
 
         {/* COLUMN 1 */}
-        <div className=" column1">
+        <div className=" column1 will-change-transform">
           <div className="h-40 md:h-60 bg-black"><img src="/images/1.png" className="h-full w-full object-cover opacity-80" /></div>
           <div className="h-40 md:h-60  bg-black"><img src="/images/2.png" className="h-full w-full object-cover opacity-80" /></div>
           <div className="h-40 md:h-60 bg-black"><img src="/images/3.png" className="h-full w-full object-cover opacity-80" /></div>
@@ -73,7 +69,7 @@ const ImageTextScroll = () => {
         </div>
 
         {/* COLUMN 2 */}
-        <div className=" column2">
+        <div className=" column2 will-change-transform">
           <div className="h-40 md:h-60 bg-black"><img src="/images/5.png" className="h-full w-full object-cover opacity-80" /></div>
           <div className="h-40 md:h-60 bg-black"><img src="/images/6.png" className="h-full w-full object-cover opacity-80" /></div>
           <div className="h-40 md:h-60 bg-black"><img src="/images/7.png" className="h-full w-full object-cover opacity-80" /></div>
@@ -83,7 +79,7 @@ const ImageTextScroll = () => {
         </div>
 
         {/* COLUMN 3 */}
-        <div className=" column3">
+        <div className=" column3 will-change-transform">
           <div className="h-40 md:h-60 bg-black"><img src="/images/9.png" className="h-full w-full object-cover opacity-80" /></div>
           <div className="h-40 md:h-60 bg-black"><img src="/images/10.png" className="h-full w-full object-cover opacity-80" /></div>
           <div className="h-40 md:h-60 bg-black"><img src="/images/11.png" className="h-full w-full object-cover opacity-80" /></div>
@@ -93,7 +89,7 @@ const ImageTextScroll = () => {
         </div>
 
         {/* COLUMN 4 */}
-        <div className=" column4">
+        <div className=" column4 will-change-transform">
           <div className="h-40 md:h-60 bg-black"><img src="/images/13.png" className="h-full w-full object-cover opacity-80" /></div>
           <div className="h-40 md:h-60 bg-black"><img src="/images/14.png" className="h-full w-full object-cover opacity-80" /></div>
           <div className="h-40 md:h-60 bg-black"><img src="/images/15.png" className="h-full w-full object-cover opacity-80" /></div>

@@ -51,16 +51,30 @@ const ProjectMedia = ({ project }) => {
       {/* THUMBNAILS */}
       <div className="thumb-slider absolute bottom-10 md:top-1/2 md:-translate-y-1/2 left-5 md:left-auto md:right-5 z-2 overflow-hidden md:h-[90vh]">
         <div className="thumb-track flex flex-row md:flex-col">
-          {[...project.images.slice(0, imagesToShow), ...project.images.slice(0, imagesToShow)].map(
-            (img, i) => (
+          {(() => {
+            // 1. Filter out placeholders
+            const validImages = project.images.filter(img => !img.includes('placehold.co'));
+
+            // 2. Safeguard: if no valid images, use a default fallback or nothing
+            if (validImages.length === 0) return null;
+
+            // 3. Ensure we have at least 'imagesToShow' items by repeating if necessary
+            let displayImages = [...validImages];
+            // Prevent infinite loop by checking if we made progress
+            while (displayImages.length < imagesToShow) {
+              displayImages = [...displayImages, ...validImages];
+            }
+
+            // 4. Create the loop for the slider (duplicate the set)
+            return [...displayImages, ...displayImages].slice(0, 10).map((img, i) => (
               <div
                 key={i}
                 className="thumb-item h-36 w-48 md:w-40 md:h-30 lg:w-52 lg:h-40 mr-4"
               >
                 <img src={img} alt={project.title} className="w-full h-full object-cover" />
               </div>
-            )
-          )}
+            ));
+          })()}
         </div>
       </div>
     </section>

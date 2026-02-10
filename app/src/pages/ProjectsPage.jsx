@@ -1,4 +1,3 @@
-import React from 'react'
 import TextScroll from '../components/common/TextScroll'
 import ProjectsSection from '../components/project-page/ProjectsSection'
 
@@ -8,7 +7,7 @@ const Projects = () => {
 
       {/* STICKY TOP SECTION */}
       <div className="sticky top-0 z-10 w-full ">
-        <TextScroll 
+        <TextScroll
           text="Projects"
           repeat={6}
           duration={100}
@@ -18,7 +17,7 @@ const Projects = () => {
 
       {/* CONTENT BELOW */}
       <div className="projects-hero min-h-dvh bg-background relative z-20">
-        <ProjectsSection/>
+        <ProjectsSection />
       </div>
 
     </div>

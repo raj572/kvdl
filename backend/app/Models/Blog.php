@@ -18,6 +18,11 @@ class Blog extends Model
         'content',
         'cover_url',
         'status',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
+        'video_type',
+        'video_url'
     ];
 
     /**

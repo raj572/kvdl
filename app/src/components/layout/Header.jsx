@@ -1,6 +1,18 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
+import { Link } from 'react-router-dom';
+
+// ... (existing imports)
+
+// ...
+
+{/* LOGO */ }
+<div className="logo w-40 md:w-52">
+  <Link to="/">
+    <img src="/images/kedarlogo.webp" alt="kvdl logo" />
+  </Link>
+</div>
 
 const Header = () => {
   const [open, setOpen] = useState("");
@@ -157,11 +169,11 @@ const Header = () => {
 
         {/* SUB NAV LINKS */}
         <div className="sub-nav absolute bottom-[5%] opacity-0 left-[50%] translate-x-[-50%] flex gap-2 text-background text-xs md:text-lg">
-          <p><a href="#">WhatsApp</a></p>
+          <p><a href="https://api.whatsapp.com/send/?phone=8605558833&text=Hello%2C+I+am+interested+in+kedar+Vanjape+Developers+Projects.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">WhatsApp</a></p>
           <p>.</p>
-          <p><a href="#">Youtube</a></p>
+          <p><a href="https://youtube.com/@kedarvanjapedevelopers6322?si=Uy5VZxnMe52tpNzD" target="_blank" rel="noopener noreferrer">Youtube</a></p>
           <p>.</p>
-          <p><a href="#">Facebook</a></p>
+          <p><a href="https://www.facebook.com/share/1DkqhR97Y7/" target="_blank" rel="noopener noreferrer">Facebook</a></p>
         </div>
       </div>
     </>

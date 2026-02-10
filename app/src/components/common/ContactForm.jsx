@@ -40,9 +40,7 @@ const ContactForm = () => {
         if (!formData.phone.trim()) {
             newErrors.phone = 'Phone number is required';
         } else {
-            // Remove spaces for validation, keep leading zeros intact
             const cleanPhone = formData.phone.replace(/\s/g, '');
-            // Check if it's between 10-15 digits
             if (!/^\d{10,15}$/.test(cleanPhone)) {
                 newErrors.phone = 'Phone number must be 10-15 digits';
             }
@@ -86,10 +84,7 @@ const ContactForm = () => {
         setSubmitStatus(null);
 
         try {
-            // Import the API service
             const { submitContactForm } = await import('../../services/api');
-
-            // Submit to backend API
             const response = await submitContactForm(formData);
 
             if (response.success !== false) {
@@ -102,20 +97,15 @@ const ContactForm = () => {
                     message: '',
                     propertyType: ''
                 });
-
                 setTimeout(() => setSubmitStatus(null), 5000);
             } else {
                 setSubmitStatus('error');
                 setTimeout(() => setSubmitStatus(null), 5000);
             }
         } catch (error) {
-
-            // Check if it's a network error (backend not running)
             if (!error.status) {
-                alert('Cannot connect to server. Please make sure the backend server is running at http://localhost:8000');
+                alert('Cannot connect to server.');
             }
-
-            // Handle validation errors from backend
             if (error.status === 422 && error.errors) {
                 const normalizedErrors = Object.fromEntries(
                     Object.entries(error.errors).map(([field, messages]) => [
@@ -125,7 +115,6 @@ const ContactForm = () => {
                 );
                 setErrors(normalizedErrors);
             }
-
             setSubmitStatus('error');
             setTimeout(() => setSubmitStatus(null), 5000);
         } finally {
@@ -134,133 +123,91 @@ const ContactForm = () => {
     };
 
     return (
-        <div className="w-full max-w-5xl mx-auto px-6 py-2 mb-0">
-            {/* Decorative Top Border */}
-            <div className="flex items-center justify-center mb-0">
-                <div className="h-px w-20 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
-                <div className="mx-4 w-2 h-2 bg-primary rotate-45"></div>
-                <div className="h-px w-20 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
-            </div>
-            <form onSubmit={handleSubmit} className="space-y-2 mt-0">
+        <div className="w-full">
+            <form onSubmit={handleSubmit} className="space-y-5">
 
                 {/* Name and Email Row */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {/* Name Field */}
                     <div className="form-group relative">
-                        <label
-                            htmlFor="name"
-                            className="block text-xs font-[arkhip] uppercase tracking-[0.2em] mb-3 text-background/70"
-                        >
-                            Full Name <span className="text-primary">*</span>
-                        </label>
-                        <div className="relative">
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                onFocus={() => setFocusedField('name')}
-                                onBlur={() => setFocusedField(null)}
-                                className={`relative z-10 w-full px-6 py-4 bg-background/5 backdrop-blur-sm border ${errors.name
-                                    ? 'border-primary/50 shadow-[0_0_15px_rgba(175,34,31,0.3)]'
-                                    : focusedField === 'name'
-                                        ? 'border-primary shadow-[0_0_20px_rgba(175,34,31,0.2)]'
-                                        : 'border-background/10'
-                                    } rounded-none text-background placeholder:text-background/30 transition-all duration-500 font-[sansation] text-base focus:outline-none focus:bg-background/10`}
-                                placeholder="Enter your full name"
-                            />
-                            <div className={`absolute bottom-0 left-0 h-[2px] bg-primary transition-all duration-500 pointer-events-none ${focusedField === 'name' ? 'w-full' : 'w-0'
-                                }`}></div>
-                        </div>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            onFocus={() => setFocusedField('name')}
+                            onBlur={() => setFocusedField(null)}
+                            className={`w-full px-4 py-3 bg-background/5 backdrop-blur-sm border ${errors.name
+                                ? 'border-primary/50'
+                                : focusedField === 'name'
+                                    ? 'border-primary'
+                                    : 'border-background/10'
+                                } rounded-none text-background placeholder:text-background/30 transition-all duration-300 font-[sansation] text-sm focus:outline-none focus:bg-background/10`}
+                            placeholder="Full Name"
+                        />
                         {errors.name && (
-                            <p className="mt-2 text-xs text-primary font-[sansation] tracking-wide">{errors.name}</p>
+                            <p className="mt-1 text-xs text-primary font-[sansation]">{errors.name}</p>
                         )}
                     </div>
 
                     {/* Email Field */}
                     <div className="form-group relative">
-                        <label
-                            htmlFor="email"
-                            className="block text-xs font-[arkhip] uppercase tracking-[0.2em] mb-3 text-background/70"
-                        >
-                            Email Address <span className="text-primary">*</span>
-                        </label>
-                        <div className="relative">
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                onFocus={() => setFocusedField('email')}
-                                onBlur={() => setFocusedField(null)}
-                                className={`relative z-10 w-full px-6 py-4 bg-background/5 backdrop-blur-sm border ${errors.email
-                                    ? 'border-primary/50 shadow-[0_0_15px_rgba(175,34,31,0.3)]'
-                                    : focusedField === 'email'
-                                        ? 'border-primary shadow-[0_0_20px_rgba(175,34,31,0.2)]'
-                                        : 'border-background/10'
-                                    } rounded-none text-background placeholder:text-background/30 transition-all duration-500 font-[sansation] text-base focus:outline-none focus:bg-background/10`}
-                                placeholder="your.email@example.com"
-                            />
-                            <div className={`absolute bottom-0 left-0 h-[2px] bg-primary transition-all duration-500 pointer-events-none ${focusedField === 'email' ? 'w-full' : 'w-0'
-                                }`}></div>
-                        </div>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            onFocus={() => setFocusedField('email')}
+                            onBlur={() => setFocusedField(null)}
+                            className={`w-full px-4 py-3 bg-background/5 backdrop-blur-sm border ${errors.email
+                                ? 'border-primary/50'
+                                : focusedField === 'email'
+                                    ? 'border-primary'
+                                    : 'border-background/10'
+                                } rounded-none text-background placeholder:text-background/30 transition-all duration-300 font-[sansation] text-sm focus:outline-none focus:bg-background/10`}
+                            placeholder="Email Address"
+                        />
                         {errors.email && (
-                            <p className="mt-2 text-xs text-primary font-[sansation] tracking-wide">{errors.email}</p>
+                            <p className="mt-1 text-xs text-primary font-[sansation]">{errors.email}</p>
                         )}
                     </div>
                 </div>
 
                 {/* Phone and Property Type Row */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {/* Phone Field */}
                     <div className="form-group relative">
-                        <label
-                            htmlFor="phone"
-                            className="block text-xs font-[arkhip] uppercase tracking-[0.2em] mb-3 text-background/70"
-                        >
-                            Phone Number <span className="text-primary">*</span>
-                        </label>
-                        <div className="relative">
-                            <input
-                                type="tel"
-                                id="phone"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleChange}
-                                onFocus={() => setFocusedField('phone')}
-                                onBlur={() => setFocusedField(null)}
-                                className={`relative z-10 w-full px-6 py-4 bg-background/5 backdrop-blur-sm border ${errors.phone
-                                    ? 'border-primary/50 shadow-[0_0_15px_rgba(175,34,31,0.3)]'
-                                    : focusedField === 'phone'
-                                        ? 'border-primary shadow-[0_0_20px_rgba(175,34,31,0.2)]'
-                                        : 'border-background/10'
-                                    } rounded-none text-background placeholder:text-background/30 transition-all duration-500 font-[sansation] text-base focus:outline-none focus:bg-background/10`}
-                                placeholder="10-digit mobile number"
-                            />
-                            <div className={`absolute bottom-0 left-0 h-[2px] bg-primary transition-all duration-500 pointer-events-none ${focusedField === 'phone' ? 'w-full' : 'w-0'
-                                }`}></div>
-                        </div>
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            onFocus={() => setFocusedField('phone')}
+                            onBlur={() => setFocusedField(null)}
+                            className={`w-full px-4 py-3 bg-background/5 backdrop-blur-sm border ${errors.phone
+                                ? 'border-primary/50'
+                                : focusedField === 'phone'
+                                    ? 'border-primary'
+                                    : 'border-background/10'
+                                } rounded-none text-background placeholder:text-background/30 transition-all duration-300 font-[sansation] text-sm focus:outline-none focus:bg-background/10`}
+                            placeholder="Phone Number"
+                        />
                         {errors.phone && (
-                            <p className="mt-2 text-xs text-primary font-[sansation] tracking-wide">{errors.phone}</p>
+                            <p className="mt-1 text-xs text-primary font-[sansation]">{errors.phone}</p>
                         )}
                     </div>
 
                     {/* Property Type Field */}
                     <div className="form-group relative">
-                        <label
-                            htmlFor="propertyType"
-                            className="block text-xs font-[arkhip] uppercase tracking-[0.2em] mb-3 text-background/70"
-                        >
-                            Property Interest
-                        </label>
                         <CustomSelect
                             name="propertyType"
                             value={formData.propertyType}
                             onChange={handleChange}
                             options={propertyTypes}
-                            placeholder="Select property type"
+                            placeholder="Property Interest"
                             onFocus={() => setFocusedField('propertyType')}
                             onBlur={() => setFocusedField(null)}
                             isFocused={focusedField === 'propertyType'}
@@ -269,120 +216,76 @@ const ContactForm = () => {
                 </div>
 
                 {/* Subject Field */}
-                <div className="form-group relative mt-24">
-                    <label
-                        htmlFor="subject"
-                        className="block text-xs font-[arkhip] uppercase tracking-[0.2em] mb-3 text-background/70"
-                    >
-                        Subject <span className="text-primary">*</span>
-                    </label>
-                    <div className="relative">
-                        <input
-                            type="text"
-                            id="subject"
-                            name="subject"
-                            value={formData.subject}
-                            onChange={handleChange}
-                            onFocus={() => setFocusedField('subject')}
-                            onBlur={() => setFocusedField(null)}
-                            className={`relative z-10 w-full px-6 py-4 bg-background/5 backdrop-blur-sm border ${errors.subject
-                                ? 'border-primary/50 shadow-[0_0_15px_rgba(175,34,31,0.3)]'
-                                : focusedField === 'subject'
-                                    ? 'border-primary shadow-[0_0_20px_rgba(175,34,31,0.2)]'
-                                    : 'border-background/10'
-                                } rounded-none text-background placeholder:text-background/30 transition-all duration-500 font-[sansation] text-base focus:outline-none focus:bg-background/10`}
-                            placeholder="What would you like to discuss?"
-                        />
-                        <div className={`absolute bottom-0 left-0 h-[2px] bg-primary transition-all duration-500 pointer-events-none ${focusedField === 'subject' ? 'w-full' : 'w-0'
-                            }`}></div>
-                    </div>
+                <div className="form-group relative">
+                    <input
+                        type="text"
+                        id="subject"
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleChange}
+                        onFocus={() => setFocusedField('subject')}
+                        onBlur={() => setFocusedField(null)}
+                        className={`w-full px-4 py-3 bg-background/5 backdrop-blur-sm border ${errors.subject
+                            ? 'border-primary/50'
+                            : focusedField === 'subject'
+                                ? 'border-primary'
+                                : 'border-background/10'
+                            } rounded-none text-background placeholder:text-background/30 transition-all duration-300 font-[sansation] text-sm focus:outline-none focus:bg-background/10`}
+                        placeholder="Subject"
+                    />
                     {errors.subject && (
-                        <p className="mt-2 text-xs text-primary font-[sansation] tracking-wide">{errors.subject}</p>
+                        <p className="mt-1 text-xs text-primary font-[sansation]">{errors.subject}</p>
                     )}
                 </div>
 
                 {/* Message Field */}
                 <div className="form-group relative">
-                    <label
-                        htmlFor="message"
-                        className="block text-xs font-[arkhip] uppercase tracking-[0.2em] mb-3 text-background/70"
-                    >
-                        Message <span className="text-primary">*</span>
-                    </label>
-                    <div className="relative">
-                        <textarea
-                            id="message"
-                            name="message"
-                            value={formData.message}
-                            onChange={handleChange}
-                            onFocus={() => setFocusedField('message')}
-                            onBlur={() => setFocusedField(null)}
-                            rows="6"
-                            spellCheck={false}
-                            className={`relative z-10 w-full px-6 py-4 bg-background/5 backdrop-blur-sm border ${errors.message
-                                ? 'border-primary/50 shadow-[0_0_15px_rgba(175,34,31,0.3)]'
-                                : focusedField === 'message'
-                                    ? 'border-primary shadow-[0_0_20px_rgba(175,34,31,0.2)]'
-                                    : 'border-background/10'
-                                } rounded-none text-background placeholder:text-background/30 transition-all duration-500 font-[sansation] text-base focus:outline-none focus:bg-background/10 resize-none`}
-                            placeholder="Tell us more about your requirements..."
-                        />
-                    </div>
+                    <textarea
+                        id="message"
+                        name="message"
+                        value={formData.message}
+                        onChange={handleChange}
+                        onFocus={() => setFocusedField('message')}
+                        onBlur={() => setFocusedField(null)}
+                        rows="4"
+                        spellCheck={false}
+                        className={`w-full px-4 py-3 bg-background/5 backdrop-blur-sm border ${errors.message
+                            ? 'border-primary/50'
+                            : focusedField === 'message'
+                                ? 'border-primary'
+                                : 'border-background/10'
+                            } rounded-none text-background placeholder:text-background/30 transition-all duration-300 font-[sansation] text-sm focus:outline-none focus:bg-background/10 resize-none`}
+                        placeholder="Your Message..."
+                    />
                     {errors.message && (
-                        <p className="mt-2 text-xs text-primary font-[sansation] tracking-wide">{errors.message}</p>
+                        <p className="mt-1 text-xs text-primary font-[sansation]">{errors.message}</p>
                     )}
                 </div>
 
-
                 {/* Submit Button */}
-                <div className="flex flex-col items-center gap-6 pt-4">
+                <div className="pt-2">
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className={`py-3 px-8 bg-primary hover:bg-red-700 text-background border font-[sansation] rounded-full cursor-pointer transition duration-300 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                        className={`w-full py-3 px-6 bg-primary hover:bg-red-700 text-background border border-transparent font-[sansation] text-sm tracking-wide uppercase transition-all duration-300 transform hover:translate-y-[-2px] ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg hover:shadow-primary/20'
                             }`}
                     >
-                        {isSubmitting ? (
-                            <span className="flex items-center gap-2">
-                                <span className="inline-block w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin"></span>
-                                Sending...
-                            </span>
-                        ) : (
-                            'Send Message'
-                        )}
+                        {isSubmitting ? 'Sending...' : 'Send Message'}
                     </button>
-
-                    {/* Status Messages */}
-                    {submitStatus === 'success' && (
-                        <div className="w-full max-w-2xl p-6 bg-background/10 backdrop-blur-sm border-2 border-green-500 text-background text-center animate-fadeIn">
-                            <div className="flex items-center justify-center gap-3">
-                                <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                </svg>
-                                <p className="font-[sansation] text-base tracking-wide">Thank you! Your message has been sent successfully.</p>
-                            </div>
-                        </div>
-                    )}
-
-                    {submitStatus === 'error' && (
-                        <div className="w-full max-w-2xl p-6 bg-background/10 backdrop-blur-sm border-2 border-primary text-background text-center animate-fadeIn">
-                            <div className="flex items-center justify-center gap-3">
-                                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                                <p className="font-[sansation] text-base tracking-wide">Something went wrong. Please try again.</p>
-                            </div>
-                        </div>
-                    )}
                 </div>
-            </form>
 
-            {/* Decorative Bottom Border */}
-            <div className="flex items-center justify-center mt-12">
-                <div className="h-px w-20 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
-                <div className="mx-4 w-2 h-2 bg-primary rotate-45"></div>
-                <div className="h-px w-20 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
-            </div>
+                {/* Status Messages as separate overlay or small text below */}
+                {submitStatus === 'success' && (
+                    <div className="p-3 bg-green-500/10 border border-green-500/20 text-green-400 text-center text-sm font-[sansation]">
+                        Message sent successfully!
+                    </div>
+                )}
+                {submitStatus === 'error' && (
+                    <div className="p-3 bg-primary/10 border border-primary/20 text-primary text-center text-sm font-[sansation]">
+                        Something went wrong.
+                    </div>
+                )}
+            </form>
         </div>
     );
 };

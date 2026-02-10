@@ -1,6 +1,24 @@
 // API Configuration
 import { getAdminToken } from '../admin/adminAuth';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
+/**
+ * Get full image URL
+ * @param {string} path - Image path from backend
+ * @returns {string} - Full URL
+ */
+export const getImageUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith('http')) return path; // Already a full URL
+    
+    // Clean potential double slashes if API_BASE_URL ends with / and path starts with /
+    const baseUrl = API_BASE_URL.replace(/\/$/, '');
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    
+    // Encode the path to handle spaces and special chars
+    // We use encodeURI to preserve slashes but encode spaces/commas
+    return `${baseUrl}${encodeURI(cleanPath)}`;
+};
 
 /**
  * Make an API request
@@ -13,8 +31,8 @@ export const apiRequest = async (endpoint, options = {}) => {
     
     const defaultOptions = {
         headers: {
-            'Content-Type': 'application/json',
             'Accept': 'application/json',
+            ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
         },
     };
 
@@ -115,6 +133,12 @@ export const getBlogs = async () => {
     });
 };
 
+export const getBlogById = async (id) => {
+    return apiRequest(`/api/blogs/${id}`, {
+        method: 'GET',
+    });
+};
+
 /**
  * Create a blog post
  * @param {object} blogData - Blog form data
@@ -123,7 +147,34 @@ export const getBlogs = async () => {
 export const createBlog = async (blogData) => {
     return apiRequest('/api/blogs', {
         method: 'POST',
-        body: JSON.stringify(blogData),
+        body: blogData, // Can be JSON string or FormData
+    });
+};
+
+/**
+ * Upload media for a blog post (Content Blocks)
+ * @param {File} file - Image file
+ * @returns {Promise} - Response data with url
+ */
+export const uploadBlogMedia = async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return apiRequest('/api/blogs/upload-media', {
+        method: 'POST',
+        body: formData,
+    });
+};
+
+/**
+ * Update a blog post
+ * @param {number|string} id - Blog ID
+ * @param {object} blogData - Blog form data
+ * @returns {Promise} - Response data
+ */
+export const updateBlog = async (id, blogData) => {
+    return apiRequest(`/api/blogs/${id}`, {
+        method: 'POST', // Using POST for file upload support (Laravel method spoofing if needed)
+        body: blogData,
     });
 };
 
@@ -175,6 +226,7 @@ export default {
     getContacts,
     getBlogs,
     createBlog,
+    updateBlog,
     deleteBlog,
     adminLogin,
     adminMe,

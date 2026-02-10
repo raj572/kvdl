@@ -2,8 +2,6 @@
 import { useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
 import router from "./router";
-import Header from "./components/layout/Header";
-import Footer from "./components/layout/Footer";
 
 import gsap from "gsap";
 import { ScrollTrigger, SplitText } from "gsap/all";
@@ -47,11 +45,7 @@ const App = () => {
   }, []);
 
   return (
-    <>
-      <Header />
-      <RouterProvider router={router} />
-      <Footer />
-    </>
+    <RouterProvider router={router} />
   );
 };
 

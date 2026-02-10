@@ -93,6 +93,15 @@ const AdminLogin = () => {
                     >
                         Sign In
                     </button>
+
+                    <div className="text-center mt-4">
+                        <a
+                            href="/admin/forgot-password"
+                            className="text-sm text-foreground/60 hover:text-primary transition-colors"
+                        >
+                            Forgot Password?
+                        </a>
+                    </div>
                 </form>
 
                 <p className="mt-6 text-xs text-foreground/60">

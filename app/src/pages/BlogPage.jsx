@@ -1,28 +1,27 @@
-import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import TextScroll from '../components/common/TextScroll';
-import { getBlogs } from '../services/api';
+import { getImageUrl } from '../services/api';
+import { useGetBlogsQuery } from '../services/blogsApi';
 
 const BlogPage = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data: blogsData, isLoading: loading, error, refetch } = useGetBlogsQuery();
+  const blogs = Array.isArray(blogsData?.data) ? blogsData.data : [];
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    fetchBlogs();
-  }, []);
-
-  const fetchBlogs = async () => {
+  const getExcerpt = (content) => {
+    if (!content) return '';
     try {
-      const response = await getBlogs();
-      const data = Array.isArray(response?.data) ? response.data : [];
-      // Normalize data if needed (though backend seems consistent)
-      setBlogs(data);
-    } catch (err) {
-      setError('Failed to load stories. Please try again later.');
-      console.error(err);
-    } finally {
-      setLoading(false);
+      const blocks = JSON.parse(content);
+      if (Array.isArray(blocks)) {
+        const textBlock = blocks.find(b => b.type === 'text');
+        if (textBlock) {
+          // Remove HTML tags for excerpt
+          return textBlock.content.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...';
+        }
+      }
+      return '';
+    } catch (e) {
+      // Fallback for old string content
+      return content.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...';
     }
   };
 
@@ -52,7 +51,7 @@ const BlogPage = () => {
             <div className="text-center py-20">
               <p className="text-red-500 font-[sansation] text-lg">{error}</p>
               <button
-                onClick={fetchBlogs}
+                onClick={refetch}
                 className="mt-4 px-6 py-2 border border-foreground rounded-full hover:bg-foreground hover:text-background transition-all"
               >
                 Try Again
@@ -75,9 +74,10 @@ const BlogPage = () => {
                 >
                   {/* Image Container */}
                   <div className="aspect-[4/3] w-full overflow-hidden bg-foreground/10">
+                    {console.log('Blog:', blog.id, 'Cover:', blog.cover_url, 'Resolved:', getImageUrl(blog.cover_url))}
                     {blog.cover_url ? (
                       <img
-                        src={blog.cover_url}
+                        src={getImageUrl(blog.cover_url)}
                         alt={blog.title}
                         className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => {
@@ -107,16 +107,16 @@ const BlogPage = () => {
                     </h2>
 
                     <p className="text-sm md:text-base text-foreground/70 font-[sansation] line-clamp-3 mb-6 flex-grow">
-                      {blog.excerpt || blog.content?.substring(0, 150) + '...'}
+                      {blog.excerpt || getExcerpt(blog.content)}
                     </p>
 
                     <div className="pt-4 mt-auto border-t border-foreground/10">
-                      <span className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider group-hover:translate-x-2 transition-transform duration-300">
+                      <Link to={`/blog/${blog.id}`} className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider group-hover:translate-x-2 transition-transform duration-300">
                         Read Story
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>
-                      </span>
+                      </Link>
                     </div>
                   </div>
                 </article>

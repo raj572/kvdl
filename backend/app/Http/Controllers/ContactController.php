@@ -20,7 +20,7 @@ class ContactController extends Controller
                 'success' => true,
                 'data' => $contacts
             ], 200);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve contacts',
@@ -64,12 +64,28 @@ class ContactController extends Controller
                 'status' => 'new'
             ]);
 
+            // Send email notification to admin
+            try {
+                \Mail::to('kvdl@lazfort.com')->send(new \App\Mail\ContactFormMail([
+                    'name' => $contact->name,
+                    'email' => $contact->email,
+                    'phone' => $contact->phone,
+                    'subject' => $contact->subject,
+                    'message' => $contact->message,
+                    'property_type' => $contact->property_type,
+                    'submitted_at' => $contact->created_at->format('F j, Y g:i A')
+                ]));
+            } catch (\Exception $mailError) {
+                // Log email error but don't fail the request
+                \Log::error('Failed to send contact form email: ' . $mailError->getMessage());
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Thank you! Your message has been sent successfully.',
                 'data' => $contact
             ], 201);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to submit contact form',

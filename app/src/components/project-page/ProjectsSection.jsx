@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
-import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { useRef, useState } from "react";
 import CompletedProjects from "./CompletedProjects";
 import OngoingProjects from "./OngoingProjects";
 
@@ -39,7 +39,7 @@ const ProjectsSection = () => {
     <div>
       {/* Tabs */}
       <div className="w-full py-6 md:py-10 flex items-center justify-center gap-5 text-foreground">
-        
+
         <button
           onClick={() => setActiveTab("completed")}
           className={`font-[sansation] border py-2 px-4 rounded-full flex items-center gap-1 transition-all duration-300 cursor-pointer
@@ -69,13 +69,13 @@ const ProjectsSection = () => {
 
           {activeTab === "completed" && (
             <div>
-             <CompletedProjects/>
+              <CompletedProjects />
             </div>
           )}
 
           {activeTab === "ongoing" && (
             <div>
-              <OngoingProjects/>
+              <OngoingProjects />
             </div>
           )}
 

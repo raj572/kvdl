@@ -1,12 +1,10 @@
-import React from 'react'
-import { 
-  FaPhoneAlt, 
-  FaEnvelope, 
-  FaFacebookF, 
-  FaInstagram, 
-  FaSnapchatGhost, 
-  FaTiktok, 
-  FaTwitter 
+
+import {
+  FaEnvelope,
+  FaFacebookF,
+  FaInstagram,
+  FaPhoneAlt,
+  FaYoutube
 } from "react-icons/fa";
 
 import { useGSAP } from "@gsap/react";
@@ -109,11 +107,9 @@ const Contact = () => {
         {/* Social Icons */}
         <p className="text-sm font-semibold">Connect with us</p>
         <div className="flex items-center gap-4 sm:gap-5 text-lg sm:text-xl">
-          <FaFacebookF />
-          <FaInstagram />
-          <FaSnapchatGhost />
-          <FaTiktok />
-          <FaTwitter />
+          <a href="https://www.facebook.com/share/1DkqhR97Y7/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors"><FaFacebookF /></a>
+          <a href="https://www.instagram.com/kedarvanjape?igsh=MTY4MDltNW4yamh4ZA==" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors"><FaInstagram /></a>
+          <a href="https://youtube.com/@kedarvanjapedevelopers6322?si=Uy5VZxnMe52tpNzD" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors"><FaYoutube /></a>
         </div>
       </div>
     </div>

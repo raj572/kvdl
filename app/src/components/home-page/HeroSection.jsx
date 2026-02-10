@@ -108,7 +108,7 @@ const Hero = () => {
 
       </div>
 
-      <div className="absolute w-full pr-0 md:pr-10 bottom-0 flex items-end justify-center md:justify-between">
+      <div className="absolute w-full pr-0 md:pr-28 bottom-0 flex items-end justify-center md:justify-between">
         <div className="testimonial-slider hidden md:flex">
           <TestimonialSlider />
         </div>
