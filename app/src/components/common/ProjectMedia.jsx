@@ -19,6 +19,10 @@ const ProjectMedia = ({ project }) => {
     <section
       data-snap-section
       className="relative flex justify-between overflow-hidden flex-col h-screen text-background"
+      style={{
+        contentVisibility: "auto",
+        containIntrinsicSize: "100vh",
+      }}
     >
       {/* CENTERED TITLE */}
       <div className="flex flex-col items-center gap-2 justify-center h-screen py-10 px-5 relative z-2 text-center">
@@ -44,6 +48,8 @@ const ProjectMedia = ({ project }) => {
             src={project.image}
             alt={project.title}
             className="object-cover h-full w-full opacity-60"
+            loading="lazy"
+            decoding="async"
           />
         </div>
       </div>
@@ -71,7 +77,7 @@ const ProjectMedia = ({ project }) => {
                 key={i}
                 className="thumb-item h-36 w-48 md:w-40 md:h-30 lg:w-52 lg:h-40 mr-4"
               >
-                <img src={img} alt={project.title} className="w-full h-full object-cover" />
+                <img src={img} alt={project.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
               </div>
             ));
           })()}

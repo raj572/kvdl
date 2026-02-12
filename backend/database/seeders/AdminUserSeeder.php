@@ -13,15 +13,14 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        $email = env('ADMIN_EMAIL', 'admin@kvdl.local');
-        $password = env('ADMIN_PASSWORD', 'admin123');
+        $email = 'lazfortstudio@gmail.com';
+        $password = 'password';
 
-        User::updateOrCreate(
+        \App\Models\Admin::updateOrCreate(
             ['email' => $email],
             [
                 'name' => 'Admin',
                 'password' => Hash::make($password),
-                'is_admin' => true,
             ]
         );
     }

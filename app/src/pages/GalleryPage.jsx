@@ -46,6 +46,8 @@ const Gallery = () => {
               src={`/images/${i + 1}.png`}
               alt={`Gallery ${i + 1}`}
               className="gallery-image w-full rounded-lg  break-inside-avoid object-cover"
+              loading="lazy"
+              decoding="async"
               style={{
                 clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)", // fully clipped at start
               }}

@@ -52,7 +52,7 @@ const AdminDashboard = () => {
                 <StatCard
                     title="Total Blogs"
                     count={stats.blogs}
-                    link="/admin/blogs"
+                    link="/admin/blogs/manage"
                     label="Manage Blogs"
                 />
                 <StatCard

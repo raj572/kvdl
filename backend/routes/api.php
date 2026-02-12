@@ -12,29 +12,37 @@ use App\Http\Controllers\CareerApplicationController;
 Route::post('/contact', [ContactController::class, 'store']);
 Route::post('/careers/apply', [CareerApplicationController::class, 'store']);
 
-// Admin Routes (Protected)
-Route::middleware('admin.auth')->group(function () {
-    Route::get('/admin/careers', [CareerApplicationController::class, 'index']);
-    Route::patch('/admin/careers/{id}', [CareerApplicationController::class, 'update']);
-    Route::get('/admin/careers/{id}/resume', [CareerApplicationController::class, 'downloadResume']);
+// Admin Authentication (Rate Limited)
+Route::middleware(['throttle:5,1'])->group(function () {
+    Route::post('/admin/login', [AdminAuthController::class, 'login']);
+    Route::post('/admin/password/forgot', [App\Http\Controllers\Admin\ForgotPasswordController::class, 'sendResetLink']);
+    Route::post('/admin/password/reset', [App\Http\Controllers\Admin\ResetPasswordController::class, 'reset']);
 });
 
-// Admin authentication
-Route::post('/admin/login', [AdminAuthController::class, 'login']);
-Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->middleware('admin.auth');
-Route::get('/admin/me', [AdminAuthController::class, 'me'])->middleware('admin.auth');
+// Admin Protected Routes
+Route::middleware('admin.auth')->prefix('admin')->group(function () {
+    Route::post('/logout', [AdminAuthController::class, 'logout']);
+    Route::get('/me', [AdminAuthController::class, 'me']);
 
-// Password Reset Routes
-Route::post('/admin/password/forgot', [App\Http\Controllers\Auth\PasswordResetController::class, 'sendResetLink']);
-Route::post('/admin/password/reset', [App\Http\Controllers\Auth\PasswordResetController::class, 'resetPassword']);
+    // Profile Management
+    Route::post('/profile/update-email', [App\Http\Controllers\Admin\ProfileController::class, 'updateEmail']);
+    Route::get('/verify-email/{token}', [App\Http\Controllers\Admin\ProfileController::class, 'verifyEmail']);
 
-// Get all contacts (admin only)
-Route::get('/contacts', [ContactController::class, 'index'])->middleware('admin.auth');
+    // Resource Routes
+    Route::get('/careers', [CareerApplicationController::class, 'index']);
+    Route::patch('/careers/{id}', [CareerApplicationController::class, 'update']);
+    Route::get('/careers/{id}/resume', [CareerApplicationController::class, 'downloadResume']);
+});
 
-// Blog management
+// Blog Routes (Mixed Access)
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{blog}', [BlogController::class, 'show']);
-Route::post('/blogs', [BlogController::class, 'store'])->middleware('admin.auth');
-Route::post('/blogs/upload-media', [BlogController::class, 'uploadMedia'])->middleware('admin.auth');
-Route::post('/blogs/{blog}', [BlogController::class, 'update'])->middleware('admin.auth');
-Route::delete('/blogs/{blog}', [BlogController::class, 'destroy'])->middleware('admin.auth');
+
+Route::middleware('admin.auth')->group(function () {
+    Route::get('/contacts', [ContactController::class, 'index']);
+
+    Route::post('/blogs', [BlogController::class, 'store']);
+    Route::post('/blogs/upload-media', [BlogController::class, 'uploadMedia']);
+    Route::post('/blogs/{blog}', [BlogController::class, 'update']);
+    Route::delete('/blogs/{blog}', [BlogController::class, 'destroy']);
+});

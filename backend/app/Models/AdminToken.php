@@ -12,7 +12,7 @@ class AdminToken extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'user_id',
+        'admin_id',
         'token_hash',
         'expires_at',
     ];
@@ -28,8 +28,8 @@ class AdminToken extends Model
         'updated_at' => 'datetime',
     ];
 
-    public function user()
+    public function admin()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Admin::class);
     }
 }

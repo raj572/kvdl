@@ -2,9 +2,11 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\AdminToken;
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use App\Models\AdminToken;
+use Illuminate\Support\Facades\Auth;
 
 class AdminTokenAuth
 {
@@ -13,40 +15,39 @@ class AdminTokenAuth
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        $header = $request->header('Authorization', '');
-        if (!preg_match('/^Bearer\s+(.+)$/i', $header, $matches)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 401);
-        }
+        $token = $request->bearerToken();
 
-        $token = trim($matches[1]);
-        if ($token === '') {
+        if (!$token) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized'
+                'message' => 'Unauthenticated.'
             ], 401);
         }
 
         $tokenHash = hash('sha256', $token);
-        $storedToken = AdminToken::with('user')
-            ->where('token_hash', $tokenHash)
+
+        $adminToken = AdminToken::where('token_hash', $tokenHash)
+            ->where('expires_at', '>', now())
             ->first();
 
-        if (
-            !$storedToken ||
-            ($storedToken->expires_at && $storedToken->expires_at->isPast()) ||
-            !$storedToken->user ||
-            !$storedToken->user->is_admin
-        ) {
+        if (!$adminToken) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized'
+                'message' => 'Invalid or expired token.'
             ], 401);
         }
+
+        // Extend token expiration (rolling session) - Optional but good for UX
+        // $adminToken->update(['expires_at' => now()->addDays(7)]);
+
+        // Log the admin in via the 'admin' guard
+        // Note: Since we are using 'session' driver in auth.php but this is stateless token auth,
+        // we manually set the user on the request or use Auth::login if session is active.
+        // For purely stateless, we just enable the user resolution.
+
+        Auth::guard('admin')->setUser($adminToken->admin);
 
         return $next($request);
     }

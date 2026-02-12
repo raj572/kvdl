@@ -58,44 +58,44 @@ const ImageTextScroll = () => {
 
         {/* COLUMN 1 */}
         <div className=" column1 will-change-transform">
-          <div className="h-40 md:h-60 bg-black"><img src="/images/1.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60  bg-black"><img src="/images/2.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/3.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/4.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/2.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/3.png" className="h-full w-full object-cover opacity-80" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/1.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60  bg-black"><img src="/images/2.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/3.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/4.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/2.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/3.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
 
 
         </div>
 
         {/* COLUMN 2 */}
         <div className=" column2 will-change-transform">
-          <div className="h-40 md:h-60 bg-black"><img src="/images/5.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/6.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/7.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/8.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/5.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/6.png" className="h-full w-full object-cover opacity-80" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/5.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/6.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/7.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/8.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/5.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/6.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
         </div>
 
         {/* COLUMN 3 */}
         <div className=" column3 will-change-transform">
-          <div className="h-40 md:h-60 bg-black"><img src="/images/9.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/10.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/11.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/12.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/10.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/11.png" className="h-full w-full object-cover opacity-80" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/9.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/10.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/11.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/12.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/10.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/11.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
         </div>
 
         {/* COLUMN 4 */}
         <div className=" column4 will-change-transform">
-          <div className="h-40 md:h-60 bg-black"><img src="/images/13.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/14.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/15.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/16.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/13.png" className="h-full w-full object-cover opacity-80" /></div>
-          <div className="h-40 md:h-60 bg-black"><img src="/images/14.png" className="h-full w-full object-cover opacity-80" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/13.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/14.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/15.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/16.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/13.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
+          <div className="h-40 md:h-60 bg-black"><img src="/images/14.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
         </div>
 
       </div>
