@@ -1,156 +1,168 @@
-import { useEffect, useState } from "react";
+import {
+    AlertCircle,
+    ArrowLeft,
+    Calendar,
+    CheckCircle2,
+    ChevronDown,
+    ChevronUp,
+    Eye,
+    Globe,
+    Hash,
+    Image as ImageIcon,
+    Save,
+    Settings,
+    User,
+    X
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { v4 as uuidv4 } from 'uuid';
-import BlockEditor from "../../components/admin/blocks/BlockEditor";
-import { createBlog, getBlogById, updateBlog, uploadBlogMedia } from "../../services/api";
+import TiptapEditor from "../../components/admin/TiptapEditor";
+import { createBlog, getBlogById, updateBlog } from "../../services/api";
+
+// Helper for SEO Score (Simple heuristic)
+const calculateSeoScore = (title, desc, content, keywords) => {
+    let score = 0;
+    if (title.length > 10 && title.length < 70) score += 20;
+    if (desc.length > 50 && desc.length < 160) score += 20;
+    if (content.length > 300) score += 20;
+    if (keywords.length > 0) score += 10;
+    if (content.includes(keywords.split(',')[0])) score += 10; // Keyword in content
+    if (title.includes(keywords.split(',')[0])) score += 20;   // Keyword in title
+    return Math.min(score, 100);
+};
 
 const AdminCreateBlog = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const isEditMode = !!id;
 
-    // Blog Form State
+    // --- State ---
+    const [loading, setLoading] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+    const [lastSaved, setLastSaved] = useState(null);
+    const [wordCount, setWordCount] = useState(0);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Drawer state
+
+    // Form Data
     const [title, setTitle] = useState('');
-    const [author, setAuthor] = useState('');
+    const [content, setContent] = useState(''); // HTML Content
     const [excerpt, setExcerpt] = useState('');
-    const [blocks, setBlocks] = useState([]); // Blocks state instead of string content
-    const [coverImage, setCoverImage] = useState(null); // File object for upload
-    const [existingCoverUrl, setExistingCoverUrl] = useState(''); // URL for display in edit mode
+    const [author, setAuthor] = useState('Admin'); // Default author
+    const [status, setStatus] = useState('draft');
+    const [publishDate, setPublishDate] = useState(new Date().toISOString().slice(0, 16));
+
+    // Media
+    const [coverImage, setCoverImage] = useState(null);
+    const [existingCoverUrl, setExistingCoverUrl] = useState('');
     const [videoType, setVideoType] = useState('youtube');
     const [videoUrl, setVideoUrl] = useState('');
     const [videoFile, setVideoFile] = useState(null);
+
+    // SEO & Metadata
     const [metaTitle, setMetaTitle] = useState('');
     const [metaDescription, setMetaDescription] = useState('');
     const [metaKeywords, setMetaKeywords] = useState('');
+    const [category, setCategory] = useState('');
+    const [tags, setTags] = useState('');
 
-    const [submitting, setSubmitting] = useState(false);
-    const [loading, setLoading] = useState(false);
+    // UI
+    const [seoOpen, setSeoOpen] = useState(true);
     const [notification, setNotification] = useState(null);
 
-    // Custom Modal State
-    const [errorModalOpen, setErrorModalOpen] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
+    const drawerRef = useRef(null);
+
+    const scrollDrawer = (amount) => {
+        if (drawerRef.current) {
+            drawerRef.current.scrollBy({ top: amount, behavior: 'smooth' });
+        }
+    };
+
+    // --- Effects ---
+    // Body Scroll Lock when Drawer is open
+    useEffect(() => {
+        if (isSettingsOpen) {
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden'; // Double lock
+        } else {
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        };
+    }, [isSettingsOpen]);
 
     useEffect(() => {
-        console.log('AdminCreateBlog mounted. ID:', id, 'isEditMode:', isEditMode);
         if (isEditMode) {
             fetchBlogDetails();
+        } else {
+            // Check for saved draft in localStorage? (Optional enhancement)
+            const savedDraft = localStorage.getItem('blog_draft');
+            if (savedDraft) {
+                // Restore draft logic could go here
+            }
         }
     }, [id]);
 
+    // Auto-save effect (Debounced)
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (!loading && title) {
+                // Save to local storage for crash recovery
+                const draft = { title, content, excerpt, author, status, metaTitle, metaDescription };
+                localStorage.setItem('blog_draft', JSON.stringify(draft));
+                setLastSaved(new Date());
+            }
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, [title, content, excerpt, author, status, metaTitle, metaDescription, loading]);
+
+    // --- Actions ---
     const fetchBlogDetails = async () => {
-        console.log('Fetching blog details for ID:', id);
         setLoading(true);
         try {
             const response = await getBlogById(id);
             if (response.success && response.data) {
                 const blog = response.data;
                 setTitle(blog.title);
-                setAuthor(blog.author || '');
+                setContent(blog.content || ''); // Ensure compatibility
                 setExcerpt(blog.excerpt || '');
-                setExcerpt(blog.excerpt || '');
-
-                // Parse content: Check if JSON or Legacy HTML
-                try {
-                    const parsedContent = JSON.parse(blog.content);
-                    if (Array.isArray(parsedContent)) {
-                        setBlocks(parsedContent);
-                    } else {
-                        // parsed but not array? treat as text
-                        throw new Error("Not an array");
-                    }
-                } catch (e) {
-                    // Fallback for legacy HTML content
-                    setBlocks([{
-                        id: uuidv4(),
-                        type: 'text',
-                        content: blog.content || ''
-                    }]);
-                }
-
+                setAuthor(blog.author || 'Admin');
+                setStatus(blog.status || 'draft');
                 setExistingCoverUrl(blog.cover_url || '');
                 setVideoType(blog.video_type || 'youtube');
                 setVideoUrl(blog.video_url || '');
                 setMetaTitle(blog.meta_title || '');
                 setMetaDescription(blog.meta_description || '');
                 setMetaKeywords(blog.meta_keywords || '');
-            } else {
-                showNotification("Failed to load blog details.", true);
+                // setPublishDate(...) // If backend supported it
             }
         } catch (error) {
-            console.error(error);
-            showNotification("Error loading blog.", true);
+            showNotification("Error loading blog details", true);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async (e, type = 'publish') => {
+        if (e) e.preventDefault();
         setSubmitting(true);
 
         try {
-            // 1. Process Blocks: Upload any new images
-            console.log('=== Starting block processing ===');
-            console.log('Total blocks:', blocks.length);
-
-            const processedBlocks = await Promise.all(blocks.map(async (block, index) => {
-                console.log(`Block ${index}:`, block.type, block);
-
-                if (block.type === 'image' && block.src && block.isNew && block.file) {
-                    console.log(`Uploading image block ${index}:`, {
-                        hasFile: !!block.file,
-                        fileType: block.file?.type,
-                        fileName: block.file?.name,
-                        fileSize: block.file?.size,
-                        isFileObject: block.file instanceof File
-                    });
-
-                    try {
-                        const uploadResp = await uploadBlogMedia(block.file);
-                        console.log(`Upload response for block ${index}:`, uploadResp);
-
-                        if (uploadResp.success && uploadResp.url) {
-                            const updatedBlock = {
-                                ...block,
-                                src: uploadResp.url,
-                                file: null,
-                                isNew: false
-                            };
-                            console.log(`Updated block ${index} after upload:`, updatedBlock);
-                            return updatedBlock;
-                        }
-                    } catch (err) {
-                        console.error(`Failed to upload block ${index}:`, err);
-                        return block;
-                    }
-                }
-                return block;
-            }));
-
-            console.log('=== Finished block processing ===');
-            console.log('Processed blocks:', processedBlocks);
-
             const formData = new FormData();
             formData.append('title', title);
-            formData.append('author', author);
+            formData.append('content', content); // Send HTML directly
             formData.append('excerpt', excerpt);
-            formData.append('content', JSON.stringify(processedBlocks));
+            formData.append('author', author);
+            formData.append('status', type === 'draft' ? 'draft' : status);
 
-            if (coverImage) {
-                formData.append('cover_image', coverImage);
-            } else if (existingCoverUrl && isEditMode) {
-                // If checking for existing value in backend, pass it or handle implicitly
-                // For this implementation, backend keeps old if no new file sent
-                formData.append('coverUrl', existingCoverUrl);
-            }
+            if (coverImage) formData.append('cover_image', coverImage);
+            else if (existingCoverUrl) formData.append('coverUrl', existingCoverUrl);
 
             formData.append('video_type', videoType);
-            if (videoType === 'youtube' || videoType === 'instagram') {
-                formData.append('video_url', videoUrl);
-            } else if (videoFile) {
-                formData.append('video_file', videoFile);
-            }
+            if (['youtube', 'instagram'].includes(videoType)) formData.append('video_url', videoUrl);
+            else if (videoFile) formData.append('video_file', videoFile);
 
             formData.append('meta_title', metaTitle);
             formData.append('meta_description', metaDescription);
@@ -158,39 +170,23 @@ const AdminCreateBlog = () => {
 
             let response;
             if (isEditMode) {
-                // formData.append('_method', 'PUT'); // Removed to avoid method spoofing conflict
                 response = await updateBlog(id, formData);
             } else {
                 response = await createBlog(formData);
             }
 
             if (response.success) {
-                showNotification(`Blog post ${isEditMode ? 'updated' : 'created'} successfully!`);
-                setTimeout(() => {
+                showNotification(`Blog ${isEditMode ? 'updated' : 'created'} successfully!`);
+                localStorage.removeItem('blog_draft');
+                if (!isEditMode) {
+                    // navigate('/admin/blogs/manage'); // Optional: Stay on page for "Zen" feel? Or navigate back.
                     navigate('/admin/blogs/manage');
-                }, 1500);
-            } else {
-                let msg = `Failed to ${isEditMode ? 'update' : 'create'} blog.`;
-                if (response.message) msg = response.message;
-                if (response.errors && Object.keys(response.errors).length > 0) {
-                    msg = Object.values(response.errors).flat()[0];
                 }
-                setErrorMessage(msg);
-                setErrorModalOpen(true);
+            } else {
+                throw new Error(response.message || 'Operation failed');
             }
         } catch (error) {
-            console.error(error);
-            let msg = `Error ${isEditMode ? 'updating' : 'creating'} blog.`;
-
-            if (error.errors && Object.keys(error.errors).length > 0) {
-                // Extract the first error message
-                msg = Object.values(error.errors).flat()[0];
-            } else if (error.message) {
-                msg = error.message;
-            }
-
-            setErrorMessage(msg);
-            setErrorModalOpen(true);
+            showNotification(error.message || "Something went wrong", true);
         } finally {
             setSubmitting(false);
         }
@@ -200,9 +196,9 @@ const AdminCreateBlog = () => {
         const previewData = {
             title,
             author,
-            content: JSON.stringify(blocks), // Stringify blocks to match BlogContentRenderer expectation for "content" prop
+            content, // HTML
             created_at: new Date().toISOString(),
-            // No cover image or video for preview if deleted from UI, or use placeholders if needed
+            cover_url: coverImage ? URL.createObjectURL(coverImage) : existingCoverUrl
         };
         localStorage.setItem('admin_blog_preview', JSON.stringify(previewData));
         window.open('/admin/blogs/preview', '_blank');
@@ -210,248 +206,280 @@ const AdminCreateBlog = () => {
 
     const showNotification = (msg, isError = false) => {
         setNotification({ msg, isError });
-        if (isError) {
-            setTimeout(() => setNotification(null), 3000);
-        }
+        setTimeout(() => setNotification(null), 3000);
     };
 
-    if (loading) {
-        return <div className="p-10 text-center">Loading...</div>;
-    }
+    const seoScore = calculateSeoScore(metaTitle || title, metaDescription || excerpt, content, metaKeywords);
+    const readingTime = Math.ceil(wordCount / 200);
+
+    if (loading) return <div className="h-screen flex items-center justify-center bg-background"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>;
 
     return (
-        <div className="pb-20 relative">
-            {/* Custom Error Modal */}
-            {errorModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 transition-all">
-                    <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-red-100 flex flex-col items-center text-center animate-in fade-in zoom-in-95 duration-200">
-                        <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                        </div>
-                        <h3 className="text-xl font-[arkhip] text-red-600 mb-2">Submission Failed</h3>
-                        <p className="text-sm text-black/60 mb-8 font-[sansation] leading-relaxed">
-                            {errorMessage}
-                        </p>
-                        <button
-                            onClick={() => setErrorModalOpen(false)}
-                            className="w-full bg-black text-white py-4 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-black/80 transition-all"
-                        >
-                            Dismiss
+        <div className="min-h-screen bg-background text-foreground font-[sansation] relative pb-20">
+
+            {/* --- Top Navigation Bar --- */}
+            <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-foreground/5 px-4 md:px-8 py-4 flex items-center justify-between transition-all duration-300">
+                <div className="flex items-center gap-4">
+                    <button onClick={() => navigate('/admin/blogs/manage')} className="p-2 hover:bg-foreground/5 rounded-full transition-colors">
+                        <ArrowLeft size={20} className="opacity-60" />
+                    </button>
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">
+                            {isEditMode ? 'Editing Post' : 'New Post'}
+                        </span>
+                        <span className="text-xs font-bold opacity-60 flex items-center gap-2">
+                            {lastSaved ? `Saved ${lastSaved.toLocaleTimeString()}` : 'Unsaved'}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <span className="hidden md:inline text-xs font-bold text-foreground/40 mr-4">
+                        {wordCount} words • {readingTime} min read
+                    </span>
+
+                    <button onClick={handlePreview} className="hidden md:flex btn-secondary px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider items-center gap-2 hover:bg-foreground/5">
+                        <Eye size={16} /> Preview
+                    </button>
+
+                    <button onClick={() => handleSubmit(null, 'draft')} className="hidden md:flex btn-secondary px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider items-center gap-2 border border-foreground/10 hover:bg-foreground/5">
+                        <Save size={16} /> Draft
+                    </button>
+
+                    <button onClick={handleSubmit} className="hidden md:flex bg-primary hover:bg-red-700 text-white px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider shadow-lg transition-all items-center gap-2">
+                        {submitting ? 'Publishing...' : 'Publish'}
+                    </button>
+
+                    <div className="w-px h-8 bg-foreground/10 mx-2 hidden md:block"></div>
+
+                    {/* Settings Toggle */}
+                    <button
+                        onClick={() => setIsSettingsOpen(true)}
+                        className={`p-2 rounded-lg hover:bg-foreground/5 transition-colors relative ${isSettingsOpen ? 'text-primary bg-foreground/5' : 'text-foreground/60'}`}
+                        title="Post Settings"
+                    >
+                        <Settings size={20} />
+                        {/* Dot indicator if important fields are missing? Optional */}
+                    </button>
+                </div>
+            </header>
+
+            {/* --- Main Editor Area (Centered, Zen Mode) --- */}
+            <main className="max-w-3xl mx-auto px-6 py-12 md:py-16">
+                {/* Title Input */}
+                <input
+                    type="text"
+                    placeholder="Post Title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full text-4xl md:text-5xl lg:text-6xl font-bold bg-transparent border-none outline-none placeholder:text-foreground/10 mb-8 font-[arkhip] leading-tight"
+                />
+
+                {/* Editor */}
+                <TiptapEditor
+                    content={content}
+                    onChange={setContent}
+                    onCharacterCountChange={setWordCount}
+                />
+            </main>
+
+            {/* --- Settings Drawer --- */}
+
+            {/* Backdrop */}
+            {isSettingsOpen && (
+                <div
+                    className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-opacity animate-in fade-in"
+                    onClick={() => setIsSettingsOpen(false)}
+                />
+            )}
+
+            {/* Slide-over Panel */}
+            <aside
+                className={`fixed inset-y-0 right-0 w-full sm:w-[450px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${isSettingsOpen ? 'translate-x-0' : 'translate-x-full'} h-[100dvh] flex flex-col`}
+            >
+                {/* Scrollable Content */}
+                <div
+                    ref={drawerRef}
+                    className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 bg-white pb-32 overscroll-contain"
+                >
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-bold font-[arkhip]">Post Settings</h2>
+                        <button onClick={() => setIsSettingsOpen(false)} className="p-2 hover:bg-foreground/5 rounded-full transition-colors">
+                            <X size={20} />
                         </button>
+                    </div>
+
+                    {/* Content Groups */}
+
+                    {/* 1. Publishing */}
+                    <section className="space-y-4">
+                        <h3 className="text-xs font-bold uppercase tracking-widest opacity-40 flex items-center gap-2">
+                            <Calendar size={12} /> Publishing
+                        </h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-foreground/5 rounded-xl p-3">
+                                <label className="text-[10px] font-bold uppercase opacity-60 mb-1 block">Status</label>
+                                <select
+                                    value={status}
+                                    onChange={(e) => setStatus(e.target.value)}
+                                    className="w-full bg-transparent text-sm font-bold outline-none cursor-pointer text-primary"
+                                >
+                                    <option value="draft">Draft</option>
+                                    <option value="published">Published</option>
+                                    <option value="archived">Archived</option>
+                                </select>
+                            </div>
+                            <div className="bg-foreground/5 rounded-xl p-3">
+                                <label className="text-[10px] font-bold uppercase opacity-60 mb-1 block">Date</label>
+                                <input
+                                    type="datetime-local"
+                                    value={publishDate}
+                                    onChange={(e) => setPublishDate(e.target.value)}
+                                    className="w-full bg-transparent text-xs font-bold outline-none cursor-pointer"
+                                />
+                            </div>
+                        </div>
+                    </section>
+
+                    <hr className="border-foreground/5" />
+
+                    {/* 2. Featured Media */}
+                    <section className="space-y-4">
+                        <h3 className="text-xs font-bold uppercase tracking-widest opacity-40 flex items-center gap-2">
+                            <ImageIcon size={12} /> Featured Image
+                        </h3>
+                        <div className="relative group rounded-xl overflow-hidden bg-foreground/5 border border-foreground/10 aspect-video hover:border-primary/50 transition-colors">
+                            {(coverImage || existingCoverUrl) ? (
+                                <img
+                                    src={coverImage ? URL.createObjectURL(coverImage) : (existingCoverUrl.startsWith('http') ? existingCoverUrl : `${import.meta.env.VITE_API_BASE_URL}${existingCoverUrl}`)}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="flex flex-col items-center justify-center h-full opacity-40 hover:opacity-100 transition-opacity cursor-pointer">
+                                    <ImageIcon size={32} className="mb-2" />
+                                    <span className="text-xs uppercase font-bold text-center px-4">Click to upload cover image</span>
+                                </div>
+                            )}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                onChange={(e) => {
+                                    if (e.target.files?.[0]) setCoverImage(e.target.files[0]);
+                                }}
+                            />
+                            {(coverImage || existingCoverUrl) && (
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); setCoverImage(null); setExistingCoverUrl('') }}
+                                    className="absolute top-2 right-2 bg-white/90 text-red-500 p-2 rounded-full shadow-sm hover:bg-white transition-colors"
+                                >
+                                    <X size={14} />
+                                </button>
+                            )}
+                        </div>
+                    </section>
+
+                    <hr className="border-foreground/5" />
+
+                    {/* 3. SEO */}
+                    <section className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-xs font-bold uppercase tracking-widest opacity-40 flex items-center gap-2">
+                                <Globe size={12} /> SEO & Metadata
+                            </h3>
+                            {/* Score Tag */}
+                            <div className={`px-2 py-1 rounded text-[10px] font-bold ${seoScore > 80 ? 'bg-green-100 text-green-700' : seoScore > 50 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
+                                Score: {seoScore}/100
+                            </div>
+                        </div>
+
+                        {/* Google Preview */}
+                        <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 text-left">
+                            <div className="text-[10px] text-gray-500 mb-1 flex items-center gap-1">
+                                <Globe size={10} /> kvdl.lazfort.com › blog › ...
+                            </div>
+                            <div className="text-sm text-[#1a0dab] font-sans font-medium hover:underline truncate">
+                                {metaTitle || title || 'Post Title'}
+                            </div>
+                            <div className="text-xs text-[#4d5156] font-sans line-clamp-2 mt-1">
+                                {metaDescription || excerpt || "Post description goes here..."}
+                            </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <div>
+                                <label className="text-[10px] font-bold uppercase opacity-60 mb-1 block">Meta Title</label>
+                                <input type="text" value={metaTitle} onChange={e => setMetaTitle(e.target.value)} className="w-full bg-foreground/5 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary transition-all" maxLength={60} placeholder="SEO Title" />
+                                <div className="text-[8px] text-right mt-1 opacity-40">{metaTitle.length}/60</div>
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-bold uppercase opacity-60 mb-1 block">Meta Description</label>
+                                <textarea value={metaDescription} onChange={e => setMetaDescription(e.target.value)} rows="3" className="w-full bg-foreground/5 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary transition-all resize-none" maxLength={160} placeholder="Brief summary for search engines..."></textarea>
+                                <div className="text-[8px] text-right mt-1 opacity-40">{metaDescription.length}/160</div>
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-bold uppercase opacity-60 mb-1 block">Keywords</label>
+                                <div className="flex items-center gap-2 bg-foreground/5 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-primary transition-all">
+                                    <Hash size={12} className="opacity-40" />
+                                    <input type="text" value={metaKeywords} onChange={e => setMetaKeywords(e.target.value)} className="bg-transparent w-full text-xs focus:outline-none" placeholder="real estate, modern, design..." />
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <hr className="border-foreground/5" />
+
+                    {/* 4. Organization */}
+                    <section className="space-y-4">
+                        <h3 className="text-xs font-bold uppercase tracking-widest opacity-40 flex items-center gap-2">
+                            <User size={12} /> Organization
+                        </h3>
+                        <div className="flex items-center gap-2 bg-foreground/5 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-primary transition-all">
+                            <User size={14} className="opacity-40" />
+                            <input type="text" value={author} onChange={e => setAuthor(e.target.value)} className="bg-transparent w-full text-xs focus:outline-none" placeholder="Author Name" />
+                        </div>
+                    </section>
+
+                    {/* Mobile Only Actions in Drawer Bottom */}
+                    <div className="md:hidden pt-8 pb-20 space-y-3">
+                        <button onClick={handleSubmit} className="w-full bg-primary text-white py-3 rounded-xl font-bold uppercase tracking-wider text-sm shadow-xl">
+                            Publish Now
+                        </button>
+                        <button onClick={() => handleSubmit(null, 'draft')} className="w-full border border-foreground/10 py-3 rounded-xl font-bold uppercase tracking-wider text-sm hover:bg-foreground/5">
+                            Save Draft
+                        </button>
+                    </div>
+
+                </div>
+
+                {/* Floating Scroll Buttons */}
+                <div className="absolute bottom-6 right-6 flex flex-col gap-2 z-50">
+                    <button
+                        onClick={() => scrollDrawer(-300)}
+                        className="bg-primary text-white p-3 rounded-full shadow-lg hover:bg-red-700 transition-all active:scale-95 border-2 border-white"
+                        title="Scroll Up"
+                    >
+                        <ChevronUp size={24} />
+                    </button>
+                    <button
+                        onClick={() => scrollDrawer(300)}
+                        className="bg-primary text-white p-3 rounded-full shadow-lg hover:bg-red-700 transition-all active:scale-95 border-2 border-white"
+                        title="Scroll Down"
+                    >
+                        <ChevronDown size={24} />
+                    </button>
+                </div>
+            </aside>
+
+            {/* Notification Toast */}
+            {notification && (
+                <div className={`fixed bottom-6 right-6 px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 z-[60] animate-in slide-in-from-bottom-5 ${notification.isError ? 'bg-red-500 text-white' : 'bg-black text-white'}`}>
+                    {notification.isError ? <AlertCircle size={20} /> : <CheckCircle2 size={20} />}
+                    <div>
+                        <p className="text-sm font-bold">{notification.msg}</p>
                     </div>
                 </div>
             )}
-
-            <header className="mb-8">
-                <p className="text-xs font-bold uppercase tracking-[0.35em] text-black/40">
-                    {isEditMode ? `Edit Entry #${id}` : 'New Entry'}
-                </p>
-                <h2 className="text-3xl md:text-4xl font-[arkhip] text-black mt-2">{isEditMode ? 'Edit Blog Post' : 'Create Blog Post'}</h2>
-            </header>
-
-            <form onSubmit={handleSubmit}>
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-8 items-start">
-
-                    {/* Left Column (Main Content) */}
-                    <div className="space-y-6">
-                        <div className="bg-white rounded-3xl p-4 sm:p-6 md:p-8 border border-black/10 shadow-sm">
-                            <label className="block text-xs font-bold uppercase tracking-widest opacity-60 mb-2">Title</label>
-                            <input
-                                type="text"
-                                required
-                                value={title}
-                                onChange={e => setTitle(e.target.value)}
-                                className="w-full bg-transparent border-b-2 border-black/10 px-0 py-3 md:py-4 focus:outline-none focus:border-primary transition-colors text-xl md:text-2xl font-bold placeholder:text-black/20"
-                                placeholder="Enter blog title here..."
-                            />
-
-                            <div className="mt-6">
-                                <label className="block text-xs font-bold uppercase tracking-widest opacity-60 mb-2">Excerpt</label>
-                                <textarea
-                                    value={excerpt}
-                                    onChange={e => setExcerpt(e.target.value)}
-                                    rows="3"
-                                    className="w-full bg-[#f8f0dd]/30 border border-black/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary resize-none placeholder:text-black/30"
-                                    placeholder="Brief summary of your blog post (optional, but recommended for SEO)..."
-                                />
-                            </div>
-
-                            <div className="mt-8">
-                                <label className="block text-xs font-bold uppercase tracking-widest opacity-60 mb-2">Content Blocks</label>
-                                <p className="text-[10px] text-black/40 mb-3">💡 Text blocks support <strong>bold</strong>, <em>italic</em>, links, and <strong>bullet/numbered lists</strong></p>
-                                <BlockEditor blocks={blocks} setBlocks={setBlocks} />
-                            </div>
-                        </div>
-
-
-
-                        <div className="bg-white rounded-3xl p-8 border border-black/10 shadow-sm">
-                            <h4 className="text-sm font-bold uppercase tracking-widest opacity-40 mb-6">SEO Configuration</h4>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1">Meta Title</label>
-                                    <input type="text" value={metaTitle} onChange={e => setMetaTitle(e.target.value)} className="w-full bg-[#f8f0dd]/30 border border-black/10 rounded-xl px-4 py-3 text-sm focus:border-primary outline-none" />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1">Meta Description</label>
-                                    <textarea rows="2" value={metaDescription} onChange={e => setMetaDescription(e.target.value)} className="w-full bg-[#f8f0dd]/30 border border-black/10 rounded-xl px-4 py-3 text-sm focus:border-primary outline-none"></textarea>
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1">Keywords</label>
-                                    <input type="text" value={metaKeywords} onChange={e => setMetaKeywords(e.target.value)} placeholder="Comma separated" className="w-full bg-[#f8f0dd]/30 border border-black/10 rounded-xl px-4 py-3 text-sm focus:border-primary outline-none" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Right Column (Sidebar Settings) */}
-                    <div className="space-y-6">
-                        {/* Publish Card */}
-                        <div className="bg-white rounded-3xl p-6 border border-black/10 shadow-sm">
-                            <h4 className="text-xs font-bold uppercase tracking-widest opacity-40 mb-4">Publishing</h4>
-                            <button
-                                type="button"
-                                onClick={handlePreview}
-                                className="w-full bg-white text-black border border-black/10 hover:bg-gray-50 font-bold uppercase tracking-widest py-4 rounded-xl transition-all text-xs shadow-sm mb-4"
-                            >
-                                Preview Blog Post
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={submitting}
-                                className="w-full bg-black text-white hover:bg-primary hover:text-black font-bold uppercase tracking-widest py-4 rounded-xl transition-all disabled:opacity-50 text-xs shadow-lg mb-4"
-                            >
-                                {submitting ? (isEditMode ? 'Updating...' : 'Publishing...') : (isEditMode ? 'Update Post' : 'Publish Post')}
-                            </button>
-                            {notification && (
-                                <div className={`p-3 rounded-lg text-center text-[10px] font-bold uppercase tracking-widest ${notification.isError ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-800'}`}>
-                                    {notification.msg}
-                                </div>
-                            )}
-                            <div className="text-[10px] text-center opacity-40 uppercase tracking-widest">
-                                Status: {isEditMode ? 'Published (Editing)' : 'Draft (Unsaved)'}
-                            </div>
-                        </div>
-
-                        {/* Author Card */}
-                        <div className="bg-white rounded-3xl p-4 sm:p-6 border border-black/10 shadow-sm">
-                            <label className="block text-xs font-bold uppercase tracking-widest opacity-60 mb-2">Author</label>
-                            <input
-                                type="text"
-                                value={author}
-                                onChange={e => setAuthor(e.target.value)}
-                                className="w-full bg-[#f8f0dd]/30 border border-black/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
-                                placeholder="Author Name"
-                            />
-                        </div>
-
-                        {/* Media Card */}
-                        <div className="bg-white rounded-3xl p-4 sm:p-6 border border-black/10 shadow-sm">
-                            <h4 className="text-xs font-bold uppercase tracking-widest opacity-40 mb-4">Media Assets</h4>
-
-                            {/* Cover Image */}
-                            <div className="mb-6">
-                                <label className="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Cover Image</label>
-                                <div className="space-y-3">
-                                    {(coverImage || existingCoverUrl) && (
-                                        <div className="w-full aspect-video rounded-lg overflow-hidden border border-black/10 bg-gray-50 relative group">
-                                            <img
-                                                src={coverImage ? URL.createObjectURL(coverImage) : (existingCoverUrl.startsWith('http') ? existingCoverUrl : `${import.meta.env.VITE_API_BASE_URL}${existingCoverUrl}`)}
-                                                alt="Cover"
-                                                className="w-full h-full object-cover"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setCoverImage(null);
-                                                    setExistingCoverUrl('');
-                                                }}
-                                                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    )}
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={e => {
-                                            if (e.target.files?.[0]) {
-                                                setCoverImage(e.target.files[0]);
-                                            }
-                                        }}
-                                        className="w-full text-xs text-black/60 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-black/5 file:text-black hover:file:bg-black/10 transition-all cursor-pointer"
-                                    />
-                                    <p className="text-[10px] text-black/40">Recommended: 1200x630px JPG/PNG</p>
-                                </div>
-                            </div>
-
-                            {/* Video Section */}
-                            <div className="pt-6 border-t border-black/5">
-                                <label className="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Featured Video</label>
-                                <div className="grid grid-cols-3 bg-[#f8f0dd]/50 p-1 rounded-xl mb-3 gap-1">
-                                    <button
-                                        type="button"
-                                        onClick={() => setVideoType('youtube')}
-                                        className={`py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all ${videoType === 'youtube' ? 'bg-white shadow-sm text-black' : 'text-black/40 hover:text-black'}`}
-                                    >
-                                        YouTube
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setVideoType('instagram')}
-                                        className={`py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all ${videoType === 'instagram' ? 'bg-white shadow-sm text-black' : 'text-black/40 hover:text-black'}`}
-                                    >
-                                        Instagram
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setVideoType('upload')}
-                                        className={`py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all ${videoType === 'upload' ? 'bg-white shadow-sm text-black' : 'text-black/40 hover:text-black'}`}
-                                    >
-                                        Upload
-                                    </button>
-                                </div>
-
-                                {videoType === 'youtube' ? (
-                                    <input
-                                        type="text"
-                                        value={videoUrl}
-                                        onChange={e => setVideoUrl(e.target.value)}
-                                        placeholder="https://www.youtube.com/watch?v=..."
-                                        className="w-full bg-[#f8f0dd]/30 border border-black/10 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-primary"
-                                    />
-                                ) : videoType === 'instagram' ? (
-                                    <input
-                                        type="text"
-                                        value={videoUrl}
-                                        onChange={e => setVideoUrl(e.target.value)}
-                                        placeholder="https://www.instagram.com/p/..."
-                                        className="w-full bg-[#f8f0dd]/30 border border-black/10 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-primary"
-                                    />
-                                ) : (
-                                    <input
-                                        type="file"
-                                        accept="video/*"
-                                        onChange={e => {
-                                            if (e.target.files?.[0]) {
-                                                setVideoFile(e.target.files[0]);
-                                            }
-                                        }}
-                                        className="w-full text-xs text-black/60 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-black/5 file:text-black hover:file:bg-black/10 transition-all cursor-pointer"
-                                    />
-                                )}
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-            </form>
         </div>
     );
 };

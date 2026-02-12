@@ -1,9 +1,9 @@
-import React, { Fragment, useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
-import ProjectMedia from './ProjectMedia'
+import { Fragment, useRef } from 'react'
 import { projects } from '../../constants/projectData'
+import ProjectMedia from './ProjectMedia'
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -35,6 +35,7 @@ const ProjectContainer = () => {
           {
             y: isLast ? "0vh" : "100vh",
             ease: "none",
+            force3D: true,
             scrollTrigger: {
               trigger: projectSection[index],
               start: "top bottom",

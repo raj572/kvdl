@@ -260,39 +260,45 @@ class BlogController extends Controller
     }
 
     /**
-     * Upload media for blog content.
+     * Upload media for blog content (Images & Videos).
      */
     public function uploadMedia(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'image' => 'required|file|mimes:jpeg,png,jpg,webp,gif|max:10240', // 10MB max
+            'file' => 'required|file|mimes:jpeg,png,jpg,webp,gif,mp4,mov,ogg,webm|max:51200', // 50MB max
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid image file',
+                'message' => 'Invalid file',
                 'errors' => $validator->errors()
             ], 422);
         }
 
         try {
-            if ($request->hasFile('image')) {
-                $destinationPath = public_path('uploads/blogs/content_images');
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $mimeType = $file->getMimeType();
+                $isVideo = str_contains($mimeType, 'video');
+                
+                $folder = $isVideo ? 'uploads/blogs/content_videos' : 'uploads/blogs/content_images';
+                $destinationPath = public_path($folder);
+                
                 if (!file_exists($destinationPath)) {
                     mkdir($destinationPath, 0777, true);
                 }
 
-                $file = $request->file('image');
                 $originalName = $file->getClientOriginalName();
                 $sanitizedName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $originalName);
                 $filename = time() . '_' . $sanitizedName;
                 $file->move($destinationPath, $filename);
-                $url = '/uploads/blogs/content_images/' . $filename;
+                $url = '/' . $folder . '/' . $filename;
 
                 return response()->json([
                     'success' => true,
-                    'url' => $url
+                    'url' => $url,
+                    'type' => $isVideo ? 'video' : 'image'
                 ], 200);
             }
         } catch (\Exception $e) {

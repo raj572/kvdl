@@ -1,7 +1,7 @@
 import ContactPopup from "../components/common/ContactPopup";
 import About from "../components/home-page/AboutSection";
 import Contact from "../components/home-page/ContactSection";
-import ImageTextScroll from "../components/home-page/GallerySection";
+import GallerySectionV2 from "../components/home-page/GallerySectionV2";
 import Hero from "../components/home-page/HeroSection";
 import ProjectSection from "../components/home-page/ProjectSection";
 import PageReveal from "../transitions/PageReveal";
@@ -13,7 +13,7 @@ const Home = () => {
       <PageReveal />
       <Hero />
       <About />
-      <ImageTextScroll />
+      <GallerySectionV2 />
       <ProjectSection />
       {/* <Projects/> */}
       <Contact />

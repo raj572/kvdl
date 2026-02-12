@@ -46,7 +46,7 @@ class ForgotPasswordController extends Controller
         // To be production ready, we MUST send a real email.
 
         try {
-            Mail::raw("Your Admin Password Reset Link: " . url("/admin/reset-password/{$token}?email={$email}"), function ($message) use ($email) {
+            Mail::raw("Your Admin Password Reset Link: " . env('FRONTEND_URL') . "/admin/reset-password/{$token}?email={$email}", function ($message) use ($email) {
                 $message->to($email);
                 $message->subject('Admin Password Reset Request');
             });

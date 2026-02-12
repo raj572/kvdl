@@ -158,7 +158,7 @@ export const createBlog = async (blogData) => {
  */
 export const uploadBlogMedia = async (file) => {
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('file', file);
     return apiRequest('/api/blogs/upload-media', {
         method: 'POST',
         body: formData,

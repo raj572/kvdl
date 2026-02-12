@@ -37,6 +37,10 @@ body {
     overflow-x: hidden;
 }
 
+button {
+    cursor: pointer;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -97,6 +101,20 @@ body {
 @keyframes scroll-item-x {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
+}
+
+/* GALLARY MARQUEE ANIMATIONS */
+@keyframes scroll-x-reverse {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.animate-marquee {
+  animation: scroll-x 40s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: scroll-x-reverse 40s linear infinite;
 }
 
 

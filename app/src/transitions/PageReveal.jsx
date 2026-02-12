@@ -1,6 +1,7 @@
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import CustomEase from 'gsap/CustomEase';
+import { projects } from '../constants/projectData';
 
 gsap.registerPlugin(CustomEase);
 
@@ -55,34 +56,55 @@ const PageReveal = () => {
     });
 
     // Asset Preloading Logic
-    const imageUrls = [
+
+
+    // Construct asset list
+    const assetsToLoad = [
       "/videos/bgvideo.mp4",
-      "/images/1.png", "/images/2.png", "/images/3.png", "/images/4.png",
-      "/images/5.png", "/images/6.png", "/images/7.png", "/images/8.png",
-      "/images/9.png", "/images/10.png", "/images/11.png", "/images/12.png",
-      "/images/13.png", "/images/14.png", "/images/15.png", "/images/16.png"
+      "/images/KVboss.png",
+      ...Array.from({ length: 16 }, (_, i) => `/images/${i + 1}.png`),
     ];
 
+    // Add active project images
+    const activeProjects = projects.slice(7, 12);
+    activeProjects.forEach(project => {
+      if (project.image) assetsToLoad.push(project.image);
+      if (project.images) {
+        project.images.slice(0, 5).forEach(img => { // Preload first 5 thumbs per project
+          if (!img.includes('placehold.co')) assetsToLoad.push(img);
+        });
+      }
+    });
+
+    // Deduplicate
+    const uniqueAssets = [...new Set(assetsToLoad)];
     let loadedCount = 0;
-    const updateProgress = () => {
+    const totalAssets = uniqueAssets.length;
+
+    const checkProgress = () => {
       loadedCount++;
-      // Optional: Update a preliminary progress bar here if needed
-      if (loadedCount === imageUrls.length) {
-        tl.play(); // Start animation only when everything is loaded
+      const progress = Math.round((loadedCount / totalAssets) * 100);
+
+      // Optional: You could show a separate small loader here if needed
+      // but we refrain from hijacking the main counter to preserve the transition style.
+
+      if (loadedCount === totalAssets) {
+        // slight delay to ensure smooth transition
+        setTimeout(() => tl.play(), 500);
       }
     };
 
-    imageUrls.forEach(url => {
+    uniqueAssets.forEach(url => {
       if (url.endsWith('.mp4')) {
         const video = document.createElement('video');
         video.src = url;
-        video.onloadeddata = updateProgress;
-        video.onerror = updateProgress; // Proceed even if fail
+        video.onloadeddata = checkProgress;
+        video.onerror = checkProgress;
       } else {
         const img = new Image();
         img.src = url;
-        img.onload = updateProgress;
-        img.onerror = updateProgress;
+        img.onload = checkProgress;
+        img.onerror = checkProgress;
       }
     });
 

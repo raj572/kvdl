@@ -69,43 +69,6 @@ const BlogInternalPage = () => {
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-[arkhip] leading-tight mb-8">
                         {blog.title}
                     </h1>
-                    {coverImage && (
-                        <div className="rounded-3xl overflow-hidden aspect-video w-full mb-10">
-                            <img
-                                src={coverImage}
-                                alt={blog.title}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                    e.target.style.display = 'none';
-                                }}
-                            />
-                        </div>
-                    )}
-
-                    {/* Video Section */}
-                    {blog.video_url && (
-                        <div className="rounded-3xl overflow-hidden aspect-video w-full mb-10 bg-black/5">
-                            {blog.video_type === 'upload' ? (
-                                <video
-                                    controls
-                                    className="w-full h-full object-cover"
-                                    src={getImageUrl(blog.video_url)}
-                                >
-                                    Your browser does not support the video tag.
-                                </video>
-                            ) : (
-                                <iframe
-                                    width="100%"
-                                    height="100%"
-                                    src={blog.video_url.replace('watch?v=', 'embed/').split('&')[0]}
-                                    title="YouTube video player"
-                                    frameBorder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                ></iframe>
-                            )}
-                        </div>
-                    )}
                 </header>
 
                 {/* Content */}

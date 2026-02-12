@@ -25,19 +25,21 @@ const ImageTextScroll = () => {
       scrollTrigger: {
         trigger: sectionRef.current,
         start: "top top",
-        end: "+=1500", // Reduced duration for better UX
+        end: "+=2000",
         pin: true,
-        scrub: 1, // Smooth interaction
+        scrub: 0.75, // Slightly tighter than 1
         anticipatePin: 1,
-        refreshPriority: 1
+        fastScrollEnd: true, // Forces completion if scrolled past quickly
+        invalidateOnRefresh: true, // Handles resizes better
       }
     });
 
     columns.forEach((col, i) => {
       tl.to(col, {
         y: movements[i],
-        ease: "none"
-      }, 0); // All animate together
+        ease: "power1.inOut",
+        force3D: true // Ensure hardware acceleration
+      }, 0);
     });
   });
 
@@ -57,7 +59,7 @@ const ImageTextScroll = () => {
         </div>
 
         {/* COLUMN 1 */}
-        <div className=" column1 will-change-transform">
+        <div className=" column1 will-change-transform" style={{ willChange: 'transform' }}>
           <div className="h-40 md:h-60 bg-black"><img src="/images/1.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
           <div className="h-40 md:h-60  bg-black"><img src="/images/2.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
           <div className="h-40 md:h-60 bg-black"><img src="/images/3.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
@@ -69,7 +71,7 @@ const ImageTextScroll = () => {
         </div>
 
         {/* COLUMN 2 */}
-        <div className=" column2 will-change-transform">
+        <div className=" column2 will-change-transform" style={{ willChange: 'transform' }}>
           <div className="h-40 md:h-60 bg-black"><img src="/images/5.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
           <div className="h-40 md:h-60 bg-black"><img src="/images/6.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
           <div className="h-40 md:h-60 bg-black"><img src="/images/7.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
@@ -79,7 +81,7 @@ const ImageTextScroll = () => {
         </div>
 
         {/* COLUMN 3 */}
-        <div className=" column3 will-change-transform">
+        <div className=" column3 will-change-transform" style={{ willChange: 'transform' }}>
           <div className="h-40 md:h-60 bg-black"><img src="/images/9.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
           <div className="h-40 md:h-60 bg-black"><img src="/images/10.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
           <div className="h-40 md:h-60 bg-black"><img src="/images/11.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
@@ -89,7 +91,7 @@ const ImageTextScroll = () => {
         </div>
 
         {/* COLUMN 4 */}
-        <div className=" column4 will-change-transform">
+        <div className=" column4 will-change-transform" style={{ willChange: 'transform' }}>
           <div className="h-40 md:h-60 bg-black"><img src="/images/13.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
           <div className="h-40 md:h-60 bg-black"><img src="/images/14.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>
           <div className="h-40 md:h-60 bg-black"><img src="/images/15.png" className="h-full w-full object-cover opacity-80" loading="lazy" decoding="async" /></div>

@@ -10,6 +10,7 @@ const AdminLogin = () => {
         password: ''
     });
     const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (isAuthenticated()) {
@@ -31,6 +32,7 @@ const AdminLogin = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         setErrorMessage('');
+        setIsLoading(true);
 
         try {
             const response = await adminLogin(formData);
@@ -42,6 +44,8 @@ const AdminLogin = () => {
             }
         } catch (error) {
             setErrorMessage(error?.message || 'Login failed. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -68,6 +72,7 @@ const AdminLogin = () => {
                             required
                             className="mt-2 w-full rounded-2xl border border-foreground/10 bg-foreground/10 px-4 py-3 text-sm text-foreground"
                             placeholder="admin@company.com"
+                            disabled={isLoading}
                         />
                     </div>
                     <div>
@@ -82,6 +87,7 @@ const AdminLogin = () => {
                             required
                             className="mt-2 w-full rounded-2xl border border-foreground/10 bg-foreground/10 px-4 py-3 text-sm text-foreground"
                             placeholder="••••••••"
+                            disabled={isLoading}
                         />
                     </div>
                     {errorMessage && (
@@ -89,9 +95,10 @@ const AdminLogin = () => {
                     )}
                     <button
                         type="submit"
-                        className="rounded-full bg-primary px-6 py-3 text-sm uppercase tracking-[0.2em] text-background transition hover:bg-red-700"
+                        disabled={isLoading}
+                        className="rounded-full bg-primary px-6 py-3 text-sm uppercase tracking-[0.2em] text-background transition hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Sign In
+                        {isLoading ? 'Signing In...' : 'Sign In'}
                     </button>
 
                     <div className="text-center mt-4">

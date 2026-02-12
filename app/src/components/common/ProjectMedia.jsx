@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import RedButton from "./RedButton";
 
 const ProjectMedia = ({ project }) => {
@@ -19,10 +19,6 @@ const ProjectMedia = ({ project }) => {
     <section
       data-snap-section
       className="relative flex justify-between overflow-hidden flex-col h-screen text-background"
-      style={{
-        contentVisibility: "auto",
-        containIntrinsicSize: "100vh",
-      }}
     >
       {/* CENTERED TITLE */}
       <div className="flex flex-col items-center gap-2 justify-center h-screen py-10 px-5 relative z-2 text-center">
@@ -57,7 +53,7 @@ const ProjectMedia = ({ project }) => {
       {/* THUMBNAILS */}
       <div className="thumb-slider absolute bottom-10 md:top-1/2 md:-translate-y-1/2 left-5 md:left-auto md:right-5 z-2 overflow-hidden md:h-[90vh]">
         <div className="thumb-track flex flex-row md:flex-col">
-          {(() => {
+          {useMemo(() => {
             // 1. Filter out placeholders
             const validImages = project.images.filter(img => !img.includes('placehold.co'));
 
@@ -80,7 +76,7 @@ const ProjectMedia = ({ project }) => {
                 <img src={img} alt={project.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
               </div>
             ));
-          })()}
+          }, [project.images, project.title, imagesToShow])}
         </div>
       </div>
     </section>
