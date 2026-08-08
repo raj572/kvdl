@@ -12,7 +12,7 @@ const CompletedProjects = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const projectData = projects.slice(7, 12);
+  const projectData = projects.filter((project) => project.type === "ongoing");
   const containerRef = useRef(null);
 
   // -------------------------

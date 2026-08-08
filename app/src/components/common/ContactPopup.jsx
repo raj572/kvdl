@@ -50,8 +50,8 @@ const ContactPopup = () => {
                             </div>
                             <div className="text-left">
                                 <p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Call Us</p>
-                                <a href="tel:+971564983456" className="text-sm font-bold text-gray-800 group-hover:text-primary transition-colors">
-                                    +971 56 498 3456
+                                <a href="tel:+918605558833" className="text-sm font-bold text-gray-800 group-hover:text-primary transition-colors">
+                                    +91 86055 58833
                                 </a>
                             </div>
                         </div>
@@ -62,8 +62,8 @@ const ContactPopup = () => {
                             </div>
                             <div className="text-left">
                                 <p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Email Us</p>
-                                <a href="mailto:support@zalomi.com" className="text-sm font-bold text-gray-800 group-hover:text-primary transition-colors">
-                                    support@zalomi.com
+                                <a href="mailto:sales@kvdl.in" className="text-sm font-bold text-gray-800 group-hover:text-primary transition-colors">
+                                    sales@kvdl.in
                                 </a>
                             </div>
                         </div>
@@ -72,7 +72,7 @@ const ContactPopup = () => {
                     {/* Actions */}
                     <div className="space-y-3">
                         <a
-                            href="https://api.whatsapp.com/send/?phone=8605558833&text=Hello%2C+I+am+interested+in+kedar+Vanjape+Developers+Projects.&type=phone_number&app_absent=0"
+                            href="https://api.whatsapp.com/send/?phone=918605558833&text=Hello%2C+I+am+interested+in+Kedar+Vanjape+Developers+Projects.&type=phone_number&app_absent=0"
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={closePopup}

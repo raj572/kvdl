@@ -103,6 +103,16 @@ button {
   100% { transform: translateX(-50%); }
 }
 
+/* Hide scrollbar but keep scroll functionality */
+.no-scrollbar {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE/Edge */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;                /* Chrome/Safari */
+}
+
+
 /* GALLARY MARQUEE ANIMATIONS */
 @keyframes scroll-x-reverse {
   0%   { transform: translateX(-50%); }

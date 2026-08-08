@@ -87,7 +87,7 @@ const About = () => {
                   <p >Kedar Vanjape</p>
                 </div>
               </div>
-              <img src="/images/KVboss.png" alt="" className='h-full w-full object-cover '/>
+              <img src="/images/KVboss.webp" alt="" className='h-full w-full object-cover '/>
           </div>
 
       </div>

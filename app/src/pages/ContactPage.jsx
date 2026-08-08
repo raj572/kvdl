@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import ContactForm from '../components/common/ContactForm';
+import MapSection from '../components/common/MapSection';
 import SectionHeader from '../components/common/SectionHeader';
+import BackButton from '../components/common/BackButton';
 
 const ContactPage = () => {
   useEffect(() => {
@@ -10,13 +12,13 @@ const ContactPage = () => {
   const contactInfo = [
     {
       title: "Phone",
-      items: ["+91 98765 43210", "+91 98765 43211"],
-      link: "tel:+919876543210"
+      items: ["+91 86055 58833"],
+      link: "tel:+918605558833"
     },
     {
       title: "Email",
-      items: ["info@kvdl.com", "sales@kvdl.com"],
-      link: "mailto:info@kvdl.com"
+      items: ["sales@kvdl.in"],
+      link: "mailto:sales@kvdl.in"
     },
     {
       title: "Address",
@@ -35,7 +37,10 @@ const ContactPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-foreground text-background font-[sansation]">
+    <div className="min-h-screen bg-foreground text-background font-[sansation] pt-24 md:pt-28">
+      <div className="max-w-[1400px] mx-auto px-5">
+        <BackButton className="text-background/60 hover:text-primary" />
+      </div>
 
       {/* Header Section */}
       <SectionHeader
@@ -101,17 +106,8 @@ const ContactPage = () => {
       </div>
 
       {/* Map Section */}
-      <div id="map" className="w-full h-[50vh] lg:h-[60vh]">
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3783.249257662054!2d73.84088667616616!3d18.523951582570414!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2c07f38b91483%3A0x1369121854b2cd6!2sKedar%20Vanjape%20Developers!5e0!3m2!1sen!2sin!4v1707455000000!5m2!1sen!2sin"
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          allowFullScreen=""
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title="KVDL Office Location"
-        />
+      <div id="map">
+        <MapSection />
       </div>
 
     </div>

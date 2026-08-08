@@ -1,11 +1,13 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Footer = () => {
+  const navigate = useNavigate();
+
   const navigationLinks = [
     { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
     { name: "Projects", path: "/projects" },
     { name: "Gallery", path: "/gallery" },
-    { name: "About", path: "/about" },
     { name: "Blog", path: "/blog" },
     { name: "Contact", path: "/contact" }
   ];
@@ -17,8 +19,8 @@ const Footer = () => {
   ];
 
   const contactInfo = {
-    phone: "+91 98765 43210",
-    email: "info@kvdl.com",
+    phone: "+91 86055 58833",
+    email: "sales@kvdl.in",
     address: "302, 3rd floor, CTS.No. 1201/7, Arc Maestro, Near Hotel Rajwadi Gourav, Shivajinagar, Pune – 411004"
   };
 
@@ -30,7 +32,7 @@ const Footer = () => {
 
   const handleNavClick = (e, path) => {
     e.preventDefault();
-    window.location.href = path;
+    navigate(path);
   };
 
   return (
@@ -44,10 +46,13 @@ const Footer = () => {
 
           {/* COMPANY INFO */}
           <div className="lg:col-span-1">
-            <h2 className="text-2xl sm:text-3xl font-semibold leading-tight mb-4 font-[arkhip]">
+            <h2 className="text-2xl sm:text-3xl font-semibold leading-tight mb-2 font-[arkhip]">
               More than homes<br />
               We create Lifestyles<span className="text-primary">.</span>
             </h2>
+            <p className="text-primary text-sm font-semibold tracking-wider uppercase mb-4">
+              Trust, Transparency & Ethics
+            </p>
             <p className="text-background/70 text-sm mb-6 leading-relaxed">
               Building premium real estate that transforms the way you live.
             </p>
@@ -169,9 +174,9 @@ const Footer = () => {
             <span className="text-center sm:text-left">
               © {new Date().getFullYear()} Kedar Vanjape Developers – All Rights Reserved
             </span>
-            <div className="w-full flex items-center justify-center py-8 sm:py-10 mt-8 ">
+            <div className="flex items-center justify-center py-4 sm:py-6">
               <Link to="/">
-                <img src="/images/kedarlogo.webp" alt="Kedar Vanjape Developers Logo" className="w-32 sm:w-40 object-contain hover:opacity-80 transition-opacity" />
+                <img src="/images/kedarlogo.webp" alt="Kedar Vanjape Developers Logo" className="w-72 sm:w-[450px] object-contain hover:opacity-80 transition-opacity" />
               </Link>
             </div>
             <span className="text-center sm:text-right">

@@ -26,7 +26,7 @@ const Chatbot = () => {
             options: [
                 { label: 'View Latest Projects', next: 'projects_list', response: 'Here are our featured premium developments.' },
                 { label: 'Request a Callback', next: 'contact_form', response: 'Sure! Please fill out the contact form on our contact page.', action: 'navigate', path: '/contact' },
-                { label: 'Contact Information', next: 'contact_info', response: 'You can reach us at sales@kvdl.com or +91 98765 43210.' },
+                { label: 'Contact Information', next: 'contact_info', response: 'You can reach us at sales@kvdl.in or +91 86055 58833.' },
                 { label: 'Office Location', next: 'location', response: 'We are located at KVDL Towers, Baner, Pune.' }
             ]
         },
@@ -41,14 +41,14 @@ const Chatbot = () => {
         project_highbreeze: {
             options: [
                 { label: 'View Details Page', action: 'navigate', path: '/projects/1', response: 'Opening Highbreeze details...' },
-                { label: 'Book Site Visit', next: 'book_visit', response: 'Great! Please call us at +91 98765 43210 to schedule.' },
+                { label: 'Book Site Visit', next: 'book_visit', response: 'Great! Please call us at +91 86055 58833 to schedule.' },
                 { label: '⬅️ Back to Projects', next: 'projects_list', response: 'Showing project list again.' }
             ]
         },
         project_greenfields: {
             options: [
                 { label: 'View Details Page', action: 'navigate', path: '/projects/2', response: 'Opening Greenfields details...' },
-                { label: 'Book Site Visit', next: 'book_visit', response: 'Great! Please call us at +91 98765 43210 to schedule.' },
+                { label: 'Book Site Visit', next: 'book_visit', response: 'Great! Please call us at +91 86055 58833 to schedule.' },
                 { label: '⬅️ Back to Projects', next: 'projects_list', response: 'Showing project list again.' }
             ]
         },

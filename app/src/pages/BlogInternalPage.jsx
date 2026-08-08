@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import BlogContentRenderer from '../components/blog/BlogContentRenderer';
+import BackButton from '../components/common/BackButton';
 import { getBlogById, getImageUrl } from '../services/api';
 
 const BlogInternalPage = () => {
@@ -59,6 +60,7 @@ const BlogInternalPage = () => {
     return (
         <div className="min-h-dvh bg-background pt-32 pb-20">
             <article className="max-w-4xl mx-auto px-6">
+                <BackButton className="mb-8" />
                 {/* Header */}
                 <header className="mb-12 text-center">
                     <div className="mb-6 flex items-center justify-center gap-2 text-sm uppercase tracking-widest opacity-60 font-[sansation]">

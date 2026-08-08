@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import CustomSelect from './CustomSelect';
+import { submitContactForm } from '../../services/api';
 
 const ContactForm = () => {
     const [formData, setFormData] = useState({
@@ -84,7 +85,6 @@ const ContactForm = () => {
         setSubmitStatus(null);
 
         try {
-            const { submitContactForm } = await import('../../services/api');
             const response = await submitContactForm(formData);
 
             if (response.success !== false) {

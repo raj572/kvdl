@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { Sparkle } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 const TextScroll = ({
   text = "Sample Text",
@@ -55,6 +55,8 @@ const TextScroll = ({
 
     playMarquee();
 
+
+
     // optimized resize
     let resizeTimer;
     const handleResize = () => {
@@ -71,17 +73,29 @@ const TextScroll = ({
   }, [duration, text, repeat]);
 
   return (
-    <div className={`w-full py-4 ${className}`}>
+    <div className={`w-full pb-2 pt-2 overflow-hidden ${className}`}>
       <div
-        className="marquee w-full flex overflow-hidden whitespace-nowrap gap-4"
+        className="marquee w-full flex overflow-hidden whitespace-nowrap pt-2"
         ref={marqueeRef}
       >
         <div
-          className={`marquee-content flex gap-10 uppercase font-[arkhip] font-semibold ${textClass}`}
+          className={`marquee-content flex gap-8 uppercase font-[arkhip] font-bold ${textClass}`}
           ref={marqueeContentRef}
         >
           {Array.from({ length: repeat }).map((_, i) => (
-            <span key={i} className="flex items-center gap-10"><Sparkle className="size-16"/> {text} </span>
+            <span
+              key={i}
+              className="flex items-center gap-4"
+            >
+              <Sparkle
+                className="w-[0.8em] h-[0.8em] flex-shrink-0"
+                strokeWidth={2}
+                fill="currentColor"
+              />
+              <span className="inline-block">
+                {text}
+              </span>
+            </span>
           ))}
         </div>
       </div>

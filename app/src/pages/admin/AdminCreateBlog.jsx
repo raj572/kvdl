@@ -17,6 +17,8 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import TiptapEditor from "../../components/admin/TiptapEditor";
+import CustomDateTimePicker from "../../components/common/CustomDateTimePicker";
+import CustomSelect from "../../components/common/CustomSelect";
 import { createBlog, getBlogById, updateBlog } from "../../services/api";
 
 // Helper for SEO Score (Simple heuristic)
@@ -218,7 +220,7 @@ const AdminCreateBlog = () => {
         <div className="min-h-screen bg-background text-foreground font-[sansation] relative pb-20">
 
             {/* --- Top Navigation Bar --- */}
-            <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-foreground/5 px-4 md:px-8 py-4 flex items-center justify-between transition-all duration-300">
+            <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-foreground/5 pl-16 pr-4 md:px-8 py-4 flex items-center justify-between transition-all duration-300">
                 <div className="flex items-center gap-4">
                     <button onClick={() => navigate('/admin/blogs/manage')} className="p-2 hover:bg-foreground/5 rounded-full transition-colors">
                         <ArrowLeft size={20} className="opacity-60" />
@@ -300,7 +302,7 @@ const AdminCreateBlog = () => {
                 {/* Scrollable Content */}
                 <div
                     ref={drawerRef}
-                    className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 bg-white pb-32 overscroll-contain"
+                    className="flex-1 overflow-y-auto overflow-x-hidden touch-pan-y p-6 md:p-8 space-y-8 bg-white pb-32 overscroll-contain no-scrollbar"
                 >
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-bold font-[arkhip]">Post Settings</h2>
@@ -316,26 +318,26 @@ const AdminCreateBlog = () => {
                         <h3 className="text-xs font-bold uppercase tracking-widest opacity-40 flex items-center gap-2">
                             <Calendar size={12} /> Publishing
                         </h3>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-foreground/5 rounded-xl p-3">
-                                <label className="text-[10px] font-bold uppercase opacity-60 mb-1 block">Status</label>
-                                <select
+                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+
+                            <div>
+                                <CustomSelect
+                                    label="Status"
+                                    name="status"
                                     value={status}
                                     onChange={(e) => setStatus(e.target.value)}
-                                    className="w-full bg-transparent text-sm font-bold outline-none cursor-pointer text-primary"
-                                >
-                                    <option value="draft">Draft</option>
-                                    <option value="published">Published</option>
-                                    <option value="archived">Archived</option>
-                                </select>
+                                    options={['draft', 'published', 'archived']}
+                                    placeholder="Select Status"
+                                    theme="light"
+                                    className="!bg-black/5 !text-black border-black/10"
+                                />
                             </div>
-                            <div className="bg-foreground/5 rounded-xl p-3">
-                                <label className="text-[10px] font-bold uppercase opacity-60 mb-1 block">Date</label>
-                                <input
-                                    type="datetime-local"
+                            <div>
+                                <CustomDateTimePicker
+                                    label="Date"
                                     value={publishDate}
                                     onChange={(e) => setPublishDate(e.target.value)}
-                                    className="w-full bg-transparent text-xs font-bold outline-none cursor-pointer"
+                                    align="right"
                                 />
                             </div>
                         </div>
@@ -453,7 +455,7 @@ const AdminCreateBlog = () => {
                 </div>
 
                 {/* Floating Scroll Buttons */}
-                <div className="absolute bottom-6 right-6 flex flex-col gap-2 z-50">
+                <div className="hidden lg:flex absolute bottom-6 right-6 flex-col gap-2 z-50">
                     <button
                         onClick={() => scrollDrawer(-300)}
                         className="bg-primary text-white p-3 rounded-full shadow-lg hover:bg-red-700 transition-all active:scale-95 border-2 border-white"

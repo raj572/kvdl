@@ -1,3 +1,4 @@
+import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminLogin } from '../services/api';
@@ -52,6 +53,15 @@ const AdminLogin = () => {
     return (
         <div className="min-h-dvh bg-background text-foreground px-6 py-24">
             <div className="mx-auto w-full max-w-lg rounded-3xl border border-foreground/10 bg-foreground/5 p-8 backdrop-blur-sm">
+                {/* Back Button */}
+                <button
+                    onClick={() => navigate('/')}
+                    className="flex items-center gap-2 text-sm text-foreground/60 hover:text-foreground transition-colors mb-6 group"
+                >
+                    <ArrowLeft className="size-4 group-hover:-translate-x-1 transition-transform" />
+                    <span>Back to Home</span>
+                </button>
+
                 <p className="text-xs font-[arkhip] uppercase tracking-[0.35em] text-foreground/60">
                     Admin Access
                 </p>

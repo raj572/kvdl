@@ -9,7 +9,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const ProjectContainer = () => {
   const mainRef = useRef(null);
-  const projectsData = projects.slice(7, 12);
+  const projectsData = projects.filter((project) => project.type === "ongoing");
 
   useGSAP(() => {
     if (!mainRef.current) return;

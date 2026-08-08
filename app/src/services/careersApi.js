@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getAdminToken } from '../admin/adminAuth';
 
 // Define the base URL
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 export const careersApi = createApi({
   reducerPath: 'careersApi',
@@ -22,7 +22,7 @@ export const careersApi = createApi({
     // Public: Apply for a job
     applyForJob: builder.mutation({
       query: (formData) => ({
-        url: '/careers/apply',
+        url: '/api/careers/apply',
         method: 'POST',
         body: formData, // FormData matches multipart/form-data
       }),
@@ -30,14 +30,14 @@ export const careersApi = createApi({
     
     // Admin: Get all applications
     getApplications: builder.query({
-      query: () => '/admin/careers',
+      query: () => '/api/admin/careers',
       providesTags: ['Applications'],
     }),
 
     // Admin: Update status
     updateApplicationStatus: builder.mutation({
       query: ({ id, status }) => ({
-        url: `/admin/careers/${id}`,
+        url: `/api/admin/careers/${id}`,
         method: 'PATCH',
         body: { status },
       }),

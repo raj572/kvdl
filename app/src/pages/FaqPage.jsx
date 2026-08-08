@@ -1,15 +1,20 @@
 import { useEffect, useState } from 'react';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import BackButton from '../components/common/BackButton';
 
 const FaqItem = ({ question, answer, isOpen, onClick }) => {
     return (
         <div className="border-b border-neutral-800">
             <button
-                className="w-full py-6 flex justify-between items-center text-left focus:outline-none group"
+                className="w-full py-6 flex justify-between items-center text-left focus:outline-none group cursor-pointer"
                 onClick={onClick}
             >
-                <h3 className="text-lg md:text-xl font-[arkhip] text-background group-hover:text-primary transition-colors">{question}</h3>
-                <span className="text-primary">
+                <h3 className={`text-lg md:text-xl font-[arkhip] transition-colors ${
+                    isOpen ? "text-primary" : "text-background/90 group-hover:text-primary"
+                }`}>
+                    {question}
+                </h3>
+                <span className="text-primary ml-4 shrink-0">
                     {isOpen ? <FaChevronUp /> : <FaChevronDown />}
                 </span>
             </button>
@@ -47,7 +52,7 @@ const FaqPage = () => {
         },
         {
             question: "How can I schedule a site visit?",
-            answer: "Scheduling a site visit is easy! You can fill out the form on our Contact page, or call our sales team directly at +91 98765 43210. We will arrange a convenient time for you to tour the property."
+            answer: "Scheduling a site visit is easy! You can fill out the form on our Contact page, or call our sales team directly at +91 86055 58833. We will arrange a convenient time for you to tour the property."
         },
         {
             question: "What amenities do you typically provide?",
@@ -64,13 +69,14 @@ const FaqPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-foreground text-background pt-20 md:pt-28 pb-10">
-            <div className="max-w-[1000px] mx-auto px-5 md:px-10">
+        <div className="min-h-screen bg-foreground text-background pt-24 md:pt-28 pb-10 px-4 md:px-8 lg:px-12">
+            <BackButton variant="dark" className="mb-4" />
 
-                <h1 className="text-4xl md:text-6xl font-[arkhip] uppercase mb-6 text-center">
+            <div className="max-w-[1000px] mx-auto flex flex-col gap-4">
+                <h1 className="text-4xl md:text-6xl font-[arkhip] uppercase text-center">
                     Frequently Asked Questions<span className="text-primary">.</span>
                 </h1>
-                <p className="text-center text-background/60 font-[sansation] mb-16 max-w-2xl mx-auto">
+                <p className="text-center text-background/60 font-[sansation] mb-8 max-w-2xl mx-auto">
                     Find answers to common questions about our projects, buying process, and services.
                 </p>
 
@@ -85,7 +91,6 @@ const FaqPage = () => {
                         />
                     ))}
                 </div>
-
             </div>
         </div>
     );

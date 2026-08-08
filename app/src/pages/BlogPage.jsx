@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import BackButton from '../components/common/BackButton';
 import TextScroll from '../components/common/TextScroll';
 import { getImageUrl } from '../services/api';
 import { useGetBlogsQuery } from '../services/blogsApi';
@@ -31,15 +32,16 @@ const BlogPage = () => {
       <div className="sticky top-0 z-10 w-full">
         <TextScroll
           text="Stories"
-          repeat={6}
+          repeat={24}
           duration={100}
-          className='pt-24 text-5xl md:pt-40 md:text-7xl lg:text-9xl'
+          className="pt-20 pb-4 text-2xl md:pt-28 md:pb-6 md:text-4xl lg:text-5xl bg-background border-y border-foreground"
         />
       </div>
 
       {/* CONTENT BELOW */}
       <div className="blog-hero min-h-dvh bg-background relative z-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-20 lg:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-12 md:pt-12 md:pb-20 lg:pt-16 lg:pb-24 flex flex-col gap-6">
+          <BackButton />
 
           {loading && (
             <div className="flex justify-center py-20">

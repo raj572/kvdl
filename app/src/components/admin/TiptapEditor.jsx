@@ -194,7 +194,7 @@ const TiptapEditor = ({ content, onChange, onCharacterCountChange }) => {
             {editor && (
                 <BubbleMenu
                     editor={editor}
-                    tippyOptions={{ duration: 100 }}
+
                     className="flex bg-black text-white rounded-xl shadow-xl overflow-hidden divide-x divide-white/20 border border-white/10"
                 >
                     <button
@@ -253,48 +253,48 @@ const TiptapEditor = ({ content, onChange, onCharacterCountChange }) => {
             {editor && (
                 <FloatingMenu
                     editor={editor}
-                    tippyOptions={{ duration: 100 }}
-                    className="flex bg-white text-black border border-black/10 rounded-xl shadow-xl overflow-hidden gap-1 p-1"
+
+                    className="flex bg-white text-black border border-black/10 rounded-xl shadow-xl overflow-hidden gap-1 p-1 max-w-[90vw] overflow-x-auto no-scrollbar"
                 >
                     <button
                         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors"
+                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors shrink-0"
                     >
-                        <Heading1 size={14} /> Heading 1
+                        <Heading1 size={14} /> <span className="hidden md:inline">Heading 1</span>
                     </button>
                     <button
                         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors"
+                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors shrink-0"
                     >
-                        <Heading2 size={14} /> Heading 2
+                        <Heading2 size={14} /> <span className="hidden md:inline">Heading 2</span>
                     </button>
                     <button
                         onClick={() => editor.chain().focus().toggleBulletList().run()}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors shrink-0"
                         title="Bullet List"
                     >
                         <List size={16} />
                     </button>
                     <button
                         onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors shrink-0"
                         title="Ordered List"
                     >
                         <ListOrdered size={16} />
                     </button>
                     <button
                         onClick={() => editor.chain().focus().toggleBlockquote().run()}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors shrink-0"
                         title="Quote"
                     >
                         <Quote size={16} />
                     </button>
-                    <div className="w-px bg-black/10 mx-1"></div>
+                    <div className="w-px bg-black/10 mx-1 shrink-0"></div>
                     <button
                         onClick={() => setIsMediaModalOpen(true)}
-                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors"
+                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors shrink-0"
                     >
-                        <ImageIcon size={14} /> Media
+                        <ImageIcon size={14} /> <span className="hidden md:inline">Media</span>
                     </button>
                 </FloatingMenu>
             )}

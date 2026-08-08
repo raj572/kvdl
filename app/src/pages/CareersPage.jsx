@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import CareerForm from '../components/common/CareerForm';
+import BackButton from '../components/common/BackButton';
 
 const CareersPage = () => {
     useEffect(() => {
@@ -8,7 +9,8 @@ const CareersPage = () => {
 
     return (
         <div className="min-h-screen bg-foreground text-background pt-24 md:pt-32 pb-20">
-            <div className="max-w-[1400px] mx-auto px-5 md:px-10">
+            <div className="max-w-[1400px] mx-auto px-5 md:px-10 flex flex-col gap-6">
+                <BackButton className="text-background/60 hover:text-primary" />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
 

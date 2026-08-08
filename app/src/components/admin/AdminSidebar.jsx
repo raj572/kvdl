@@ -1,4 +1,3 @@
-import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { adminLogout } from "../../services/api";
@@ -26,13 +25,14 @@ const AdminSidebar = () => {
     return (
         <>
             {/* Mobile Hamburger Button */}
-            <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden fixed top-4 right-4 z-50 bg-black text-white p-3 rounded-xl shadow-lg hover:bg-primary hover:text-black transition-all"
-                aria-label="Toggle menu"
-            >
-                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            <div className="lg:hidden fixed top-[18px] left-5 z-50">
+                <button
+                    className={`burger flex justify-center items-center w-10 h-10 transition-all duration-300 cursor-pointer ${mobileMenuOpen ? "active" : ""} before:!bg-black after:!bg-black before:!w-5 after:!w-5 relative`}
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    aria-label="Toggle menu"
+                    style={{ top: '1px' }}
+                ></button>
+            </div>
 
             {/* Mobile Overlay */}
             {mobileMenuOpen && (

@@ -11,7 +11,7 @@ const CompletedProjects = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const projectData = projects.slice(0, 6);
+  const projectData = projects.filter((project) => project.type === "completed");
   const containerRef = useRef(null);
 
   // -------------------------

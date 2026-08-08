@@ -8,10 +8,38 @@ const CustomSelect = ({
     name,
     onFocus,
     onBlur,
-    isFocused
+    isFocused,
+    theme = "dark", // "dark" (for dark backgrounds, light text) or "light" (for light backgrounds, dark text)
+    label,
+    className = ""
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
+
+    const isDark = theme === "dark";
+    const textColor = isDark ? "text-background" : "!text-black";
+    const mutedTextColor = isDark ? "text-background/50" : "!text-black/50";
+    const borderColor = isDark ? "border-background/10" : "border-black/10";
+    const bgColor = isDark ? "bg-background/5" : "bg-black/5";
+    const hoverBgColor = isDark ? "bg-background/5" : "bg-black/5"; // For options hover
+    const dropdownBg = isDark ? "bg-foreground" : "bg-white"; // Dropdown matches theme? Or always dark?
+    // Current implementation: `bg-foreground` (black)
+    // If we are in light mode, dropdown should probably be white?
+    // Let's stick to existing dropdown style (black bg) or generic?
+    // User complaint: "draft text is not visible because it is white color" (in the selected view?).
+    // "it is showing on hovering" -> likely referring to the dropdown options or the selected value.
+    // If dropdown has `bg-foreground` (black), then `text-background` (cream) IS visible.
+    // So the issue is likely the SELECTED VALUE display on the white drawer.
+    // So I definitely need to fix the main button styles.
+
+    // For dropdown options:
+    // They currently use `text-background` (cream) on `bg-foreground` (black). This should be visible.
+    // Unless `bg-foreground` on white drawer looks odd? (Black dropdown on white page).
+    // Usually dropdowns match the input theme.
+    // I'll make the dropdown background adapt too.
+    const dropdownBgClass = isDark ? "bg-foreground" : "bg-white";
+    const dropdownTextClass = isDark ? "text-background" : "text-black";
+    const dropdownBorderClass = isDark ? "border-background/10" : "border-black/10";
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -44,22 +72,20 @@ const CustomSelect = ({
     const selectedOption = options.find(opt => opt === value);
 
     return (
-        <div className="relative" ref={dropdownRef}>
-            {/* Selected Value Display */}
+        <div className="flex flex-col w-full gap-1 relative" ref={dropdownRef}>
+            {label && <label className="text-[10px] font-bold uppercase opacity-60">{label}</label>}
+
             <button
                 type="button"
                 onClick={handleToggle}
-                className={`relative z-10 w-full px-4 py-3 bg-background/5 backdrop-blur-sm border ${isFocused
-                    ? 'border-primary shadow-[0_0_15px_rgba(175,34,31,0.15)]'
-                    : 'border-background/10'
-                    } rounded-none text-left transition-all duration-300 font-[sansation] text-sm focus:outline-none focus:bg-background/10 cursor-pointer overflow-hidden group`}
+                className={`w-full h-[42px] px-3 rounded-lg bg-foreground/5 text-xs focus:outline-none focus:ring-1 focus:ring-primary transition-all text-left flex items-center justify-between cursor-pointer group ${className}`}
             >
-                <div className="flex items-center justify-between relative z-10">
-                    <span className={`transition-colors duration-300 ${value ? 'text-background' : 'text-background/50'}`}>
+                <div className="flex items-center justify-between w-full">
+                    <span className={`font-[sansation] font-bold ${value ? textColor : mutedTextColor}`}>
                         {selectedOption || placeholder}
                     </span>
                     <svg
-                        className={`w-4 h-4 text-background/70 transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}
+                        className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'} opacity-50 group-hover:opacity-100`}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -67,26 +93,19 @@ const CustomSelect = ({
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                 </div>
-
-                {/* Hover effect background */}
-                <div className="absolute inset-0 bg-background/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
-
-            {/* Animated Underline */}
-            <div className={`absolute bottom-0 left-0 h-[1px] bg-primary transition-all duration-300 pointer-events-none ${isFocused ? 'w-full' : 'w-0'
-                }`}></div>
 
             {/* Dropdown Options */}
             {isOpen && (
-                <div className="absolute z-50 w-full mt-1 bg-foreground border border-background/10 shadow-xl overflow-hidden animate-slideDown">
+                <div className={`absolute z-50 w-full top-full mt-1 ${dropdownBgClass} border ${dropdownBorderClass} shadow-xl rounded-lg overflow-hidden animate-slideDown`}>
                     <div className="max-h-60 overflow-y-auto scrollbar-hide">
                         {options.map((option, index) => (
                             <div key={index}>
                                 <div
                                     onClick={() => handleSelect(option)}
                                     className={`relative px-4 py-3 cursor-pointer transition-all duration-200 font-[sansation] text-sm group ${value === option
-                                        ? 'bg-primary/20 text-background border-l-2 border-primary'
-                                        : 'text-background/80 hover:bg-background/5 hover:text-background border-l-2 border-transparent hover:border-primary/50'
+                                        ? `bg-primary/20 ${dropdownTextClass} border-l-2 border-primary`
+                                        : `${isDark ? 'text-background/80' : 'text-black/80'} hover:${hoverBgColor} hover:${dropdownTextClass} border-l-2 border-transparent hover:border-primary/50`
                                         }`}
                                 >
                                     <div className="flex items-center justify-between">
@@ -102,7 +121,7 @@ const CustomSelect = ({
                                 </div>
                                 {/* Divider line between options */}
                                 {index < options.length - 1 && (
-                                    <div className="h-px bg-background/5"></div>
+                                    <div className={`h-px ${isDark ? 'bg-background/5' : 'bg-black/5'}`}></div>
                                 )}
                             </div>
                         ))}

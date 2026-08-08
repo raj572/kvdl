@@ -44,8 +44,6 @@ const ProjectMedia = ({ project }) => {
             src={project.image}
             alt={project.title}
             className="object-cover h-full w-full opacity-60"
-            loading="lazy"
-            decoding="async"
           />
         </div>
       </div>
@@ -73,7 +71,7 @@ const ProjectMedia = ({ project }) => {
                 key={i}
                 className="thumb-item h-36 w-48 md:w-40 md:h-30 lg:w-52 lg:h-40 mr-4"
               >
-                <img src={img} alt={project.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                <img src={img} alt={project.title} className="w-full h-full object-cover" />
               </div>
             ));
           }, [project.images, project.title, imagesToShow])}

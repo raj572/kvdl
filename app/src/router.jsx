@@ -26,6 +26,7 @@ import Projects from "./pages/ProjectsPage";
 import ResetPassword from "./pages/ResetPassword";
 import { adminMe } from "./services/api";
 import PageTransition from "./transitions/PageTransition";
+import PageReveal from "./transitions/PageReveal";
 
 const AdminGate = ({ children }) => {
   const navigate = useNavigate();
@@ -68,6 +69,7 @@ import Chatbot from "./components/common/Chatbot";
 const PublicLayout = () => {
   return (
     <>
+      <PageReveal />
       <Header />
       <Outlet />
       <Chatbot />

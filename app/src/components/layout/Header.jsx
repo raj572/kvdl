@@ -1,29 +1,20 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
-import { Link } from 'react-router-dom';
-
-// ... (existing imports)
-
-// ...
-
-{/* LOGO */ }
-<div className="logo w-40 md:w-52">
-  <Link to="/">
-    <img src="/images/kedarlogo.webp" alt="kvdl logo" />
-  </Link>
-</div>
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const [open, setOpen] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
   const tl = useRef(null);
   const navRef = useRef(null);
 
   const menuItems = [
     { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
     { name: "Projects", path: "/projects" },
     { name: "Gallery", path: "/gallery" },
-    { name: "About", path: "/about" },
     { name: "Blog", path: "/blog" },
     { name: "Contact", path: "/contact" }
   ];
@@ -33,9 +24,13 @@ const Header = () => {
     e.preventDefault();
     setOpen("");
 
-    tl.current.reverse().then(() => {
-      window.location.href = path;
-    });
+    if (tl.current) {
+      tl.current.reverse().then(() => {
+        navigate(path);
+      });
+    } else {
+      navigate(path);
+    }
   };
 
   // MENU OVERLAY ANIMATION
@@ -131,8 +126,10 @@ const Header = () => {
         className="navbar fixed w-full flex justify-between items-center px-5 py-4 bg-blend-difference z-50 bg-foreground"
       >
         {/* LOGO */}
-        <div className="logo w-40 md:w-52">
-          <img src="/images/kedarlogo.webp" alt="kvdl logo" />
+        <div className="logo w-40 md:w-52 hover:opacity-80 transition-opacity">
+          <Link to="/">
+            <img src="/images/kedarlogo.webp" alt="kvdl logo" />
+          </Link>
         </div>
 
         {/* BURGER BUTTON */}
@@ -161,7 +158,7 @@ const Header = () => {
               {/* ACTIVE RED LINE */}
               <div
                 className="red-line h-3 bg-primary absolute left-0 bottom-1 -z-10"
-                data-active={currentPath === item.path}
+                data-active={location.pathname === item.path}
               />
             </div>
           ))}
@@ -169,7 +166,7 @@ const Header = () => {
 
         {/* SUB NAV LINKS */}
         <div className="sub-nav absolute bottom-[5%] opacity-0 left-[50%] translate-x-[-50%] flex gap-2 text-background text-xs md:text-lg">
-          <p><a href="https://api.whatsapp.com/send/?phone=8605558833&text=Hello%2C+I+am+interested+in+kedar+Vanjape+Developers+Projects.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">WhatsApp</a></p>
+          <p><a href="https://api.whatsapp.com/send/?phone=918605558833&text=Hello%2C+I+am+interested+in+Kedar+Vanjape+Developers+Projects.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">WhatsApp</a></p>
           <p>.</p>
           <p><a href="https://youtube.com/@kedarvanjapedevelopers6322?si=Uy5VZxnMe52tpNzD" target="_blank" rel="noopener noreferrer">Youtube</a></p>
           <p>.</p>

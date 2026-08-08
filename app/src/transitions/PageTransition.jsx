@@ -73,12 +73,17 @@ const PageTransition = () => {
 
     revealPage();
 
-    // Intercept all links
+    // Intercept internal HTML page links only (exclude file downloads like pdf)
     const links = document.querySelectorAll('a[href^="/"]');
 
     const clickHandler = (e) => {
-      const href = e.currentTarget.href;
+      const link = e.currentTarget;
+      const href = link.href;
       const url = new URL(href).pathname;
+
+      if (link.hasAttribute("download") || url.endsWith(".pdf") || link.target === "_blank") {
+        return; // Allow standard browser behavior (e.g. open in new tab or download file)
+      }
 
       if (url !== pathname) {
         e.preventDefault();
