@@ -24,7 +24,7 @@ const PageTransition = () => {
 
       for (let i = 0; i < blockCount; i++) {
         const block = document.createElement("div");
-        block.className = "block";
+        block.className = "transition-block";
         overlayRef.current.appendChild(block);
         blocksRef.current.push(block);
       }

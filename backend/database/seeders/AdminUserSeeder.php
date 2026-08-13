@@ -21,6 +21,16 @@ class AdminUserSeeder extends Seeder
             [
                 'name' => 'Admin',
                 'password' => Hash::make($password),
+                'is_super_admin' => false,
+            ]
+        );
+
+        \App\Models\Admin::updateOrCreate(
+            ['email' => 'developer@kvdl.in'],
+            [
+                'name' => 'Super Admin',
+                'password' => Hash::make('password'),
+                'is_super_admin' => true,
             ]
         );
     }

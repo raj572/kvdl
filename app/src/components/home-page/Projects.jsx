@@ -146,9 +146,9 @@ const Projects = () => {
               {item.title}
             </h1>
             <div className=" flex justify-center mt-4">
-              <div className="project-button bg-primary hover:bg-red-700 transition-all duration-300  px-4 md:px-10 py-2 text-background font-[sansation] border border-background cursor-pointer rounded-full">
+              <Link to={`/projects/${item.id}`} className="project-button bg-primary hover:bg-red-700 transition-all duration-300  px-4 md:px-10 py-2 text-background font-[sansation] border border-background cursor-pointer rounded-full">
                 See Project
-              </div>
+              </Link>
             </div>
           </div>
         </div>

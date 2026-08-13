@@ -73,9 +73,9 @@ const TextScroll = ({
   }, [duration, text, repeat]);
 
   return (
-    <div className={`w-full pb-2 pt-2 overflow-hidden ${className}`}>
+    <div className={`w-full overflow-hidden ${className}`}>
       <div
-        className="marquee w-full flex overflow-hidden whitespace-nowrap pt-2"
+        className="marquee w-full flex overflow-hidden whitespace-nowrap"
         ref={marqueeRef}
       >
         <div

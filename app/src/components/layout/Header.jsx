@@ -123,7 +123,7 @@ const Header = () => {
     <>
       <nav
         ref={navRef}
-        className="navbar fixed w-full flex justify-between items-center px-5 py-4 bg-blend-difference z-50 bg-foreground"
+        className="navbar fixed top-0 left-0 w-full h-[70px] md:h-[85px] flex justify-between items-center px-5 bg-blend-difference z-50 bg-foreground"
       >
         {/* LOGO */}
         <div className="logo w-40 md:w-52 hover:opacity-80 transition-opacity">

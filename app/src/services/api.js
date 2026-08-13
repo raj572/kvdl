@@ -1,5 +1,5 @@
-// API Configuration
 import { getAdminToken } from '../admin/adminAuth';
+import { getSuperToken } from '../super-admin/superAuth';
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 /**
@@ -10,6 +10,7 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localho
 export const getImageUrl = (path) => {
     if (!path) return null;
     if (path.startsWith('http')) return path; // Already a full URL
+    if (path.startsWith('/images/')) return path; // Serve locally from frontend public folder
     
     // Clean potential double slashes if API_BASE_URL ends with / and path starts with /
     const baseUrl = API_BASE_URL.replace(/\/$/, '');
@@ -36,7 +37,8 @@ export const apiRequest = async (endpoint, options = {}) => {
         },
     };
 
-    const token = getAdminToken();
+    const isSuperRoute = endpoint.startsWith('/api/super-admin');
+    const token = isSuperRoute ? getSuperToken() : getAdminToken();
     const config = {
         ...defaultOptions,
         ...options,
@@ -221,6 +223,57 @@ export const adminLogout = async () => {
     });
 };
 
+/* -------------------------------------------------------------
+   PROJECTS & SUPER-ADMIN ENDPOINTS
+   ------------------------------------------------------------- */
+
+export const getProjects = async (params = {}) => {
+    const searchParams = new URLSearchParams(params);
+    const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return apiRequest(`/api/projects${queryString}`, {
+        method: 'GET',
+    });
+};
+
+export const getProjectById = async (id) => {
+    return apiRequest(`/api/projects/${id}`, {
+        method: 'GET',
+    });
+};
+
+export const superAdminLogin = async (credentials) => {
+    return apiRequest('/api/super-admin/login', {
+        method: 'POST',
+        body: JSON.stringify(credentials),
+    });
+};
+
+export const superAdminMe = async () => {
+    return apiRequest('/api/super-admin/me', {
+        method: 'GET',
+    });
+};
+
+export const createProject = async (formData) => {
+    return apiRequest('/api/super-admin/projects', {
+        method: 'POST',
+        body: formData, // Must be FormData for file uploads
+    });
+};
+
+export const updateProject = async (id, formData) => {
+    return apiRequest(`/api/super-admin/projects/${id}`, {
+        method: 'POST', // Using POST with Laravel's spoofing if required, or direct POST
+        body: formData, // Must be FormData
+    });
+};
+
+export const deleteProject = async (id) => {
+    return apiRequest(`/api/super-admin/projects/${id}`, {
+        method: 'DELETE',
+    });
+};
+
 export default {
     submitContactForm,
     getContacts,
@@ -231,4 +284,11 @@ export default {
     adminLogin,
     adminMe,
     adminLogout,
+    getProjects,
+    getProjectById,
+    superAdminLogin,
+    superAdminMe,
+    createProject,
+    updateProject,
+    deleteProject,
 };

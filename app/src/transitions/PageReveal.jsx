@@ -1,7 +1,6 @@
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import CustomEase from 'gsap/CustomEase';
-import { projects } from '../constants/projectData';
 
 gsap.registerPlugin(CustomEase);
 
@@ -89,26 +88,21 @@ const PageReveal = () => {
       ...Array.from({ length: 16 }, (_, i) => `/images/${i + 1}.webp`),
     ];
 
-    const activeProjects = projects.slice(7, 12);
-    activeProjects.forEach(project => {
-      if (project.image) assetsToLoad.push(project.image);
-      if (project.images) {
-        const validImages = project.images.filter(img => !img.includes('placehold.co'));
-        let displayImages = [...validImages];
-        while (displayImages.length < 10 && validImages.length > 0) {
-          displayImages = [...displayImages, ...validImages];
-        }
-        displayImages.slice(0, 10).forEach(img => assetsToLoad.push(img));
-      }
-    });
-
     const uniqueAssets = [...new Set(assetsToLoad)];
     let loadedCount = 0;
     const totalAssets = uniqueAssets.length;
 
+    const failSafeTimeout = setTimeout(() => {
+      if (!assetsDone) {
+        assetsDone = true;
+        tryExit();
+      }
+    }, 4000);
+
     const onAssetDone = () => {
       loadedCount++;
       if (loadedCount === totalAssets) {
+        clearTimeout(failSafeTimeout);
         assetsDone = true;
         tryExit();
       }

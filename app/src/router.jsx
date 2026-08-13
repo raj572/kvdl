@@ -24,9 +24,15 @@ import Home from "./pages/HomePage";
 import NotFound from "./pages/NotFoundPage";
 import Projects from "./pages/ProjectsPage";
 import ResetPassword from "./pages/ResetPassword";
-import { adminMe } from "./services/api";
+import { adminMe, superAdminMe } from "./services/api";
 import PageTransition from "./transitions/PageTransition";
 import PageReveal from "./transitions/PageReveal";
+
+// Super-Admin Imports
+import { isSuperAuthenticated, clearSuperToken } from "./super-admin/superAuth";
+import SuperAdminLogin from "./pages/super-admin/SuperAdminLogin";
+import SuperAdminDashboard from "./pages/super-admin/SuperAdminDashboard";
+import SuperAdminProjectForm from "./pages/super-admin/SuperAdminProjectForm";
 
 const AdminGate = ({ children }) => {
   const navigate = useNavigate();
@@ -58,6 +64,42 @@ const AdminGate = ({ children }) => {
   }, [navigate]);
 
   if (checking || !isAuthenticated()) {
+    return null;
+  }
+
+  return children;
+};
+
+const SuperAdminGate = ({ children }) => {
+  const navigate = useNavigate();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    const verifySession = async () => {
+      if (!isSuperAuthenticated()) {
+        navigate("/super-admin/login", { replace: true });
+        setChecking(false);
+        return;
+      }
+
+      try {
+        const response = await superAdminMe();
+        if (!response?.success || !response?.data?.is_super_admin) {
+          clearSuperToken();
+          navigate("/super-admin/login", { replace: true });
+        }
+      } catch (error) {
+        clearSuperToken();
+        navigate("/super-admin/login", { replace: true });
+      } finally {
+        setChecking(false);
+      }
+    };
+
+    verifySession();
+  }, [navigate]);
+
+  if (checking || !isSuperAuthenticated()) {
     return null;
   }
 
@@ -116,6 +158,28 @@ const router = createBrowserRouter([
               { path: "contacts", element: <AdminContacts /> },
               { path: "careers", element: <AdminCareers /> }
             ]
+          }
+        ]
+      },
+      {
+        path: "/super-admin",
+        children: [
+          { path: "login", element: <SuperAdminLogin /> },
+          {
+            path: "dashboard",
+            element: <SuperAdminGate><SuperAdminDashboard /></SuperAdminGate>
+          },
+          {
+            path: "projects/new",
+            element: <SuperAdminGate><SuperAdminProjectForm /></SuperAdminGate>
+          },
+          {
+            path: "projects/:id/edit",
+            element: <SuperAdminGate><SuperAdminProjectForm /></SuperAdminGate>
+          },
+          {
+            path: "",
+            element: <Navigate to="dashboard" replace />
           }
         ]
       }

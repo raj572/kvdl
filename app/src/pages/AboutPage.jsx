@@ -22,12 +22,12 @@ const About = () => {
     <div className="about-page min-h-dvh">
 
       {/* STICKY TOP SECTION — UNTOUCHED */}
-      <div className="sticky top-0 z-10 w-full">
+      <div className="sticky top-[70px] md:top-[85px] z-10 w-full bg-background mt-[70px] md:mt-[85px]">
         <TextScroll
           text="About"
           repeat={24}
           duration={100}
-          className="pt-20 pb-4 text-2xl md:pt-28 md:pb-6 md:text-4xl lg:text-5xl bg-background border-y border-foreground"
+          className="py-2 md:py-3 text-2xl md:text-4xl lg:text-5xl border-y border-foreground"
         />
       </div>
 

@@ -106,4 +106,68 @@ class AdminAuthController extends Controller
             'message' => 'Logged out successfully'
         ], 200);
     }
+
+    /**
+     * Handle super admin login.
+     */
+    public function superAdminLogin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $admin = Admin::where('email', $request->email)->first();
+
+        if (!$admin || !Hash::check($request->password, $admin->password)) {
+            ActivityLogService::log(null, 'super_login_failed', ['email' => $request->email]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid credentials.'
+            ], 401);
+        }
+
+        if (!$admin->is_super_admin) {
+            ActivityLogService::log($admin->id, 'super_login_forbidden', ['email' => $request->email]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Access denied. You are not a Super-Admin.'
+            ], 403);
+        }
+
+        // Generate Token
+        $token = Str::random(64);
+        $tokenHash = hash('sha256', $token);
+        $expiresAt = now()->addDays(7); // 7 days expiration
+
+        AdminToken::create([
+            'admin_id' => $admin->id,
+            'token_hash' => $tokenHash,
+            'expires_at' => $expiresAt
+        ]);
+
+        ActivityLogService::log($admin->id, 'super_login_success');
+
+        return response()->json([
+            'success' => true,
+            'token' => $token,
+            'expires_at' => $expiresAt,
+            'admin' => [
+                'id' => $admin->id,
+                'name' => $admin->name,
+                'email' => $admin->email,
+                'is_super_admin' => true
+            ]
+        ], 200);
+    }
 }

@@ -1,9 +1,78 @@
 import { useEffect, useRef, useState } from "react";
 import { FaLocationDot, FaMapPin, FaStarHalfStroke } from "react-icons/fa6";
 import { Link, useParams } from "react-router-dom";
-import { projects } from "../../constants/projectData.js";
+import { getProjectById, getImageUrl } from "../../services/api.js";
 import RedButton from "../common/RedButton.jsx";
 import BackButton from "../common/BackButton.jsx";
+
+// Import icons for mapping
+import { BiCar, BiCompass, BiCycling, BiGame, BiRecycle, BiSolidBuildings, BiTennisBall, BiWater, BiWifi, BiAbacus } from "react-icons/bi";
+import { BsDropletFill, BsPhoneFill } from "react-icons/bs";
+import { CgGym } from "react-icons/cg";
+import { FaScrewdriver, FaSolarPanel, FaSwimmingPool, FaWalking } from "react-icons/fa";
+import { FaElevator, FaFireExtinguisher, FaHandHoldingDollar, FaLightbulb } from "react-icons/fa6";
+import { GiCctvCamera, GiClubs, GiHouseKeys, GiKidSlide, GiMeditation, GiPoliceOfficerHead } from "react-icons/gi";
+import { IoFlower } from "react-icons/io5";
+import { MdDateRange, MdStadium } from "react-icons/md";
+import { PiFlowerLotus, PiResizeFill, PiTelevision } from "react-icons/pi";
+import { RiBookShelfLine, RiEarthquakeFill } from "react-icons/ri";
+import { Sparkles, Loader2 } from "lucide-react";
+
+// Icon mapping tables
+const highlightIconMap = {
+  "Units": GiHouseKeys,
+  "Project Size": PiResizeFill,
+  "Project Area": PiResizeFill,
+  "Launch Date": MdDateRange,
+  "Completion Date": MdDateRange,
+  "Total Towers": BiSolidBuildings,
+};
+
+const amenityIconMap = {
+  "Power Backup": FaLightbulb,
+  "Lift": FaElevator,
+  "Service/Goods Lift": FaElevator,
+  "Security": GiPoliceOfficerHead,
+  "Intercom Facility": BsPhoneFill,
+  "Rain Water Harvesting": BsDropletFill,
+  "Fire Fighting Equipment": FaFireExtinguisher,
+  "Fire Safety": FaFireExtinguisher,
+  "Parking": BiCar,
+  "Reserved Parking": BiCar,
+  "Club House": GiClubs,
+  "Gymnasium": CgGym,
+  "Swimming Pool": FaSwimmingPool,
+  "Jogging Track": FaWalking,
+  "Cycling Track": BiCycling,
+  "Indoor Games Room": BiGame,
+  "Meditation Area": GiMeditation,
+  "Internet/Wifi Connectivity": BiWifi,
+  "Waste Disposal": BiRecycle,
+  "Multipurpose Courts": MdStadium,
+  "Indoor Squash & Badminton Courts": BiTennisBall,
+  "Solar Energy": FaSolarPanel,
+  "Early Learning Centre": BiAbacus,
+  "Library And Business Centre": RiBookShelfLine,
+  "Flower Gardens": IoFlower,
+  "Flower Garden": PiFlowerLotus,
+  "Park": IoFlower,
+  "Maintenance Staff": FaScrewdriver,
+  "Water Storage": BiWater,
+  "Vaastu Complaint": BiCompass,
+  "Premium branded fittings": FaHandHoldingDollar,
+  "DTH Television Facility": PiTelevision,
+  "Earth quake resistant": RiEarthquakeFill,
+  "CCTV Camera": GiCctvCamera,
+  "Kids' Play Ground": GiKidSlide
+};
+
+const getHighlightIcon = (label) => {
+  return highlightIconMap[label] || Sparkles;
+};
+
+const getAmenityIcon = (label) => {
+  return amenityIconMap[label] || Sparkles;
+};
 
 /* ── Slider sub-component with left/right controls ── */
 const SliderWithControls = ({ displayImages }) => {
@@ -123,18 +192,86 @@ const SliderWithControls = ({ displayImages }) => {
 
 const ProjectItem = () => {
   const { id } = useParams();
-  const project = projects[id];
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    const loadProject = async () => {
+      try {
+        const response = await getProjectById(id);
+        if (response.success) {
+          setProject(response.data);
+        }
+      } catch (err) {
+        console.error("Failed to load project:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProject();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 z-50 w-screen h-screen bg-[#0c0c0c] flex flex-col items-center justify-center">
+        {/* Subtle grid pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, #f8f0dd 1px, transparent 1px),
+              linear-gradient(to bottom, #f8f0dd 1px, transparent 1px)
+            `,
+            backgroundSize: "60px 60px"
+          }}
+        />
+        {/* Radial glow */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(175,34,31,0.08) 0%, transparent 70%)"
+          }}
+        />
+
+        {/* Center content */}
+        <div className="relative z-10 flex flex-col items-center justify-center px-8">
+          <div className="overflow-hidden mb-3 animate-pulse">
+            <h1 className="font-[arkhip] text-[clamp(2.5rem,8vw,7rem)] uppercase text-[#f8f0dd] leading-none tracking-[0.08em]">
+              KVDL
+            </h1>
+          </div>
+          <div className="overflow-hidden">
+            <p className="font-[sansation] text-[clamp(0.6rem,1.5vw,0.85rem)] uppercase tracking-[0.35em] text-[#f8f0dd]/40">
+              Kedar Vanjape Developers
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#AF221F] ml-2 align-middle animate-ping"></span>
+            </p>
+          </div>
+        </div>
+
+        {/* Loading line — bottom */}
+        <div className="absolute bottom-0 left-0 right-0 px-8 md:px-16 pb-10 md:pb-14 w-full">
+          <div className="flex justify-between items-center mb-3">
+            <span className="font-[sansation] text-[0.65rem] uppercase tracking-[0.3em] text-[#f8f0dd]/30">
+              Loading Project
+            </span>
+          </div>
+          {/* Infinite running progress bar */}
+          <div className="relative w-full h-px bg-[#f8f0dd]/10 overflow-hidden">
+            <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[#AF221F]/60 to-[#AF221F] animate-shimmer" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!project) return (
     <div className="h-screen bg-foreground text-background w-full flex flex-col gap-10 justify-center items-center ">
       <h1 className="font-[arkhip] text-5xl text-center uppercase font-semibold">Project <br />Not Found<span className="text-primary">.</span></h1>
       <Link to="/projects" className="underline text-primary font-[sansation]">GO BACK</Link>
     </div>
-  )
+  );
+
   return (
     <div className="w-full min-h-dvh pt-16 md:pt-24 pb-16 md:pb-24 px-4 md:px-8 lg:px-12">
       <BackButton label="Back to All Projects" to="/projects" className="mb-4" />
@@ -178,7 +315,7 @@ const ProjectItem = () => {
         <div className="flex flex-col lg:flex-row ">
 
           <div className="w-full lg:w-4/6 overflow-hidden rounded-xl">
-            <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+            <img src={getImageUrl(project.image)} alt={project.title} className="w-full h-full object-cover" />
           </div>
 
           <div className="w-full lg:w-2/6 px-0 lg:px-10">
@@ -186,14 +323,14 @@ const ProjectItem = () => {
             <div className="flex flex-col gap-4 mt-8 lg:mt-0 ">
               <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-2 gap-2 md:gap-6">
                 {project.highlights?.map((item, i) => {
-                  const Icon = item.icon;
+                  const IconComponent = getHighlightIcon(item.label);
                   return (
                     <div
                       key={i}
                       className="flex flex-row md:flex-col gap-4 justify-start md:justify-center items-center  border-2 border-foreground-light rounded-xl p-2 md:p-4"
                     >
-                      <div className="bg-foreground-light p-2 rounded-full">
-                        <Icon className="size-5 md:size-8" />
+                      <div className="bg-foreground-light p-2 rounded-full text-foreground">
+                        <IconComponent className="size-5 md:size-8" />
                       </div>
                       <div className="flex flex-row justify-between md:flex-col items-center w-full">
                         <p className="text-sm ">{item.label}</p>
@@ -206,7 +343,7 @@ const ProjectItem = () => {
             </div>
 
             <div className="mt-8 lg:mt-14 flex flex-col gap-4 ">
-              <p>{project.description}</p>
+              <p className="leading-relaxed whitespace-pre-line">{project.description}</p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <RedButton to={"/contact"} label={"Contact Seller"} />
                 {project.brochure && (
@@ -222,7 +359,6 @@ const ProjectItem = () => {
               </div>
             </div>
 
-
           </div>
         </div>
 
@@ -231,9 +367,9 @@ const ProjectItem = () => {
           const validImages = project?.images?.filter(img => !img.includes('placehold.co')) || [];
           if (validImages.length === 0) return null;
 
-          let displayImages = [...validImages];
+          let displayImages = [...validImages].map(img => getImageUrl(img));
           while (displayImages.length < 10) {
-            displayImages = [...displayImages, ...validImages];
+            displayImages = [...displayImages, ...displayImages];
           }
 
           return (
@@ -241,18 +377,17 @@ const ProjectItem = () => {
           );
         })()}
 
-
-        {/* Amneties */}
-        <div className="flex flex-col gap-4">
-          <h2 className="font-[arkhip] text-lg md:text-xl  uppercase">Amneties</h2>
+        {/* Amenities */}
+        <div className="flex flex-col gap-4 mt-10">
+          <h2 className="font-[arkhip] text-lg md:text-xl  uppercase">Amenities</h2>
           <div className=" flex flex-wrap gap-4 items-center text-sm">
             {project?.amneties?.length > 0 &&
-              project.amneties.map((a, i) => {
-                const Icon = a.icon;
+              project.amneties.map((label, i) => {
+                const IconComponent = getAmenityIcon(label);
                 return (
                   <div key={i} className="flex items-center gap-2 border border-neutral-800 rounded-full px-4 py-2">
-                    <Icon className="text-lg md:text-xl text-neutral-800" />
-                    <span >{a.label}</span>
+                    <IconComponent className="text-lg md:text-xl text-neutral-800" />
+                    <span>{label}</span>
                   </div>
                 );
               })
@@ -280,7 +415,7 @@ const ProjectItem = () => {
                   {validFloorplans.map((img, i) => (
                     <div key={i} className="mb-4 break-inside-avoid rounded-md overflow-hidden">
                       <img
-                        src={img}
+                        src={getImageUrl(img)}
                         alt={`Floorplan ${i + 1}`}
                         className="w-full h-auto object-contain"
                       />
@@ -292,9 +427,7 @@ const ProjectItem = () => {
           );
         })()}
 
-
       </div>
-
 
     </div>
   );
