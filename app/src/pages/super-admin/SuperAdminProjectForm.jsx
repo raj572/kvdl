@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { getProjectById, createProject, updateProject } from '../../services/api';
-import { ArrowLeft, Plus, Trash2, Upload, Loader2 } from 'lucide-react';
+import { getProjectById, createProject, updateProject, getImageUrl } from '../../services/api';
+import { ArrowLeft, Plus, Trash2, Upload, Loader2, Info } from 'lucide-react';
 
 const COMMON_AMENITIES = [
   'Power Backup',
@@ -349,11 +349,19 @@ const SuperAdminProjectForm = () => {
             
             {/* Main Cover image */}
             <div className="space-y-4">
-              <label className="block text-xs uppercase tracking-widest text-[#f8f0dd]/60 font-semibold">Main Cover Image</label>
+              <div className="flex items-center gap-2">
+                <label className="block text-xs uppercase tracking-widest text-[#f8f0dd]/60 font-semibold">Main Cover Image</label>
+                <div className="group relative flex items-center">
+                  <Info size={14} className="text-[#f8f0dd]/40 cursor-help hover:text-[#f8f0dd]/80 transition-colors" />
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 bg-[#1c1c1c] border border-[#f8f0dd]/10 text-xs text-[#f8f0dd]/80 p-2 rounded shadow-xl z-10 text-center">
+                    Recommended: 1920x1080 (16:9), Max 5MB.
+                  </div>
+                </div>
+              </div>
               <div className="flex flex-col sm:flex-row items-center gap-6">
                 {imagePreview && (
                   <img
-                    src={imagePreview}
+                    src={getImageUrl(imagePreview)}
                     alt="cover preview"
                     className="w-40 h-24 object-cover rounded-lg border border-[#f8f0dd]/10"
                   />
@@ -370,7 +378,15 @@ const SuperAdminProjectForm = () => {
 
             {/* Gallery images */}
             <div className="space-y-4 pt-4">
-              <label className="block text-xs uppercase tracking-widest text-[#f8f0dd]/60 font-semibold">Gallery Images</label>
+              <div className="flex items-center gap-2">
+                <label className="block text-xs uppercase tracking-widest text-[#f8f0dd]/60 font-semibold">Gallery Images</label>
+                <div className="group relative flex items-center">
+                  <Info size={14} className="text-[#f8f0dd]/40 cursor-help hover:text-[#f8f0dd]/80 transition-colors" />
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 bg-[#1c1c1c] border border-[#f8f0dd]/10 text-xs text-[#f8f0dd]/80 p-2 rounded shadow-xl z-10 text-center">
+                    Recommended: 1920x1080 (16:9), Max 5MB per image.
+                  </div>
+                </div>
+              </div>
               
               <label className="flex flex-col items-center justify-center border border-dashed border-[#f8f0dd]/15 hover:border-[#AF221F] rounded-lg p-6 cursor-pointer transition-colors bg-[#1c1c1c]">
                 <Upload size={24} className="text-[#f8f0dd]/40 mb-2" />
@@ -385,7 +401,7 @@ const SuperAdminProjectForm = () => {
                   {/* Existing Gallery Images */}
                   {isEdit && existingGallery.map((url, index) => (
                     <div key={`existing-${index}`} className="relative group border border-[#f8f0dd]/10 rounded-lg overflow-hidden h-20 bg-black">
-                      <img src={url} alt="existing gallery preview" className="w-full h-full object-cover" />
+                      <img src={getImageUrl(url)} alt="existing gallery preview" className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => removeExistingGalleryImage(index)}
@@ -422,7 +438,7 @@ const SuperAdminProjectForm = () => {
                 {existingBrochure && (
                   <div className="text-xs bg-[#1c1c1c] px-3 py-2 border border-[#f8f0dd]/10 rounded-lg">
                     <span className="text-[#f8f0dd]/60">Current PDF: </span>
-                    <a href={existingBrochure} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline hover:text-blue-300 font-semibold">
+                    <a href={getImageUrl(existingBrochure)} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline hover:text-blue-300 font-semibold">
                       View Brochure
                     </a>
                   </div>
@@ -507,9 +523,21 @@ const SuperAdminProjectForm = () => {
                   <span>{amenity}</span>
                 </label>
               ))}
+              {/* Render custom amenities that are selected but not in COMMON_AMENITIES */}
+              {selectedAmenities.filter(a => !COMMON_AMENITIES.includes(a)).map((customAm) => (
+                <label key={customAm} className="flex items-center gap-3 text-sm text-[#f8f0dd]/80 cursor-pointer hover:text-white">
+                  <input
+                    type="checkbox"
+                    checked={true}
+                    onChange={() => handleAmenityCheck(customAm)}
+                    className="rounded border-[#f8f0dd]/20 accent-[#AF221F] w-4 h-4 bg-[#1c1c1c]"
+                  />
+                  <span className="text-blue-300">{customAm} (Custom)</span>
+                </label>
+              ))}
             </div>
 
-            {/* Custom Amenities */}
+            {/* Custom Amenities Input */}
             <div className="pt-4 border-t border-[#f8f0dd]/5 flex gap-4">
               <input
                 type="text"

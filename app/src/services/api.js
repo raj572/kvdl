@@ -10,6 +10,7 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localho
 export const getImageUrl = (path) => {
     if (!path) return null;
     if (path.startsWith('http')) return path; // Already a full URL
+    if (path.startsWith('blob:')) return path; // Blob URL
     if (path.startsWith('/images/')) return path; // Serve locally from frontend public folder
     
     // Clean potential double slashes if API_BASE_URL ends with / and path starts with /

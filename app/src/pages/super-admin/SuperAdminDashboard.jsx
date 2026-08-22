@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getProjects, deleteProject } from '../../services/api';
+import { getProjects, deleteProject, getImageUrl } from '../../services/api';
 import { clearSuperToken } from '../../super-admin/superAuth';
 import { Plus, Edit2, Trash2, LogOut, Loader2, ExternalLink } from 'lucide-react';
 
@@ -116,7 +116,7 @@ const SuperAdminDashboard = () => {
                     <tr key={project.id} className="hover:bg-white/[0.02] transition-colors">
                       <td className="px-6 py-4 flex items-center gap-4">
                         <img
-                          src={project.image || 'https://placehold.co/100x60'}
+                          src={project.image ? getImageUrl(project.image) : 'https://placehold.co/100x60'}
                           alt={project.title}
                           className="w-16 h-10 object-cover rounded-lg border border-[#f8f0dd]/10"
                         />

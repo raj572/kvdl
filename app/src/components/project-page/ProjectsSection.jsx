@@ -24,12 +24,6 @@ const ProjectsSection = () => {
           ease: "power2.out",
         }
       );
-
-      gsap.to(containerRef.current, {
-        height: contentRef.current.offsetHeight,
-        duration: 0.5,
-        ease: "power2.out",
-      });
     });
 
     return () => ctx.revert();
@@ -60,10 +54,9 @@ const ProjectsSection = () => {
 
       </div>
 
-      {/* Animated container */}
       <div
         ref={containerRef}
-        className="relative overflow-hidden mt-5 px-6 "
+        className="relative overflow-hidden mt-5 px-6"
       >
         <div ref={contentRef}>
 

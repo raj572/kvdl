@@ -1,23 +1,40 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { projects } from "../../constants/projectData";
+import { getProjects, getImageUrl } from "../../services/api";
+
 gsap.registerPlugin(ScrollTrigger);
 
 const CompletedProjects = () => {
+  const [projectData, setProjectData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [entranceFinished, setEntranceFinished] = useState(false);
+  const containerRef = useRef(null);
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    const fetchProjects = async () => {
+      try {
+        const res = await getProjects({ type: "completed" });
+        if (res.success) {
+          setProjectData(res.data);
+        }
+      } catch (err) {
+        console.error("Failed to load projects", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProjects();
   }, []);
-
-  const projectData = projects.filter((project) => project.type === "completed");
-  const containerRef = useRef(null);
 
   // -------------------------
   // 🔥 MAIN PAGE ZOOM ENTRANCE
   // -------------------------
   useGSAP(() => {
+    if (loading) return;
     // Disable all scrollTriggers before entrance animation
     ScrollTrigger.getAll().forEach((st) => st.disable());
 
@@ -32,13 +49,16 @@ const CompletedProjects = () => {
       .add(() => {
         // Re-enable scrollTriggers after entrance animation finishes
         ScrollTrigger.getAll().forEach((st) => st.enable());
+        ScrollTrigger.refresh();
+        setEntranceFinished(true);
       });
-  }, []);
+  }, { dependencies: [loading] });
 
   // -------------------------
   // 🔥 SCROLL ANIMATIONS
   // -------------------------
   useGSAP(() => {
+    if (loading || !entranceFinished) return;
     const rows = gsap.utils.toArray(".project-row");
 
     rows.forEach((row) => {
@@ -57,12 +77,21 @@ const CompletedProjects = () => {
         },
       });
     });
-  }, []);
+    ScrollTrigger.refresh();
+  }, { dependencies: [loading, projectData, entranceFinished] });
 
 
   const rows = [];
   for (let i = 0; i < projectData.length; i += 2) {
     rows.push(projectData.slice(i, i + 2));
+  }
+
+  if (loading) {
+    return (
+      <div className="w-full flex justify-center py-20">
+        <p className="uppercase text-sm tracking-widest animate-pulse">Loading Projects...</p>
+      </div>
+    );
   }
 
   return (
@@ -83,7 +112,7 @@ const CompletedProjects = () => {
                 >
                   <div className="work-item-img h-[50vh] md:h-[50vh] lg:h-[70vh] overflow-hidden rounded-lg">
                     <img
-                      src={project.image}
+                      src={getImageUrl(project.image)}
                       alt={project.title}
                       className="w-full h-full object-cover"
                     />

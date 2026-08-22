@@ -2,12 +2,11 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger, SplitText } from "gsap/all";
 import { Link } from "react-router-dom";
-import { projects } from "../../constants/projectData.js";
+import { useEffect, useState } from "react";
+import { getProjects, getImageUrl } from "../../services/api";
 import ImageSlider from "../common/ImageSlider.jsx";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
-
-const projectData = projects;
 
 const images = [
   "/images/1.webp",
@@ -20,7 +19,27 @@ const images = [
 ];
 
 const Projects = () => {
+  const [projectData, setProjectData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await getProjects(); // Fetch all projects, or limit if preferred
+        if (res.success) {
+          setProjectData(res.data);
+        }
+      } catch (err) {
+        console.error("Failed to load projects", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProjects();
+  }, []);
+
   useGSAP(() => {
+    if (loading) return;
     gsap.utils.toArray(".work-item").forEach((item) => {
       const title = item.querySelector(".work-item-name h1");
       const img = item.querySelector(".work-item-img");
@@ -74,7 +93,7 @@ const Projects = () => {
     });
 
     ScrollTrigger.refresh();
-  });
+  }, { dependencies: [loading, projectData] });
 
   return (
     <section className="overflow-hidden">
@@ -102,57 +121,63 @@ const Projects = () => {
       </div>
 
       {/* PROJECT ITEMS */}
-      {projectData.map((item, i) => (
-        <div key={i} className="work-item relative w-screen h-[150vh] overflow-hidden">
-          <div
-            className="work-item-img absolute w-full h-full bg-black"
-            style={{
-              clipPath: "polygon(25% 25%, 75% 40%, 100% 100%, 0% 100%)",
-            }}
-          >
-            <div className="absolute z-2 top-[10%]  w-full md:top-[20%] px-5 lg:px-20 text-white font-[sansation]  flex justify-between">
-              <div>
-                <p>3.755° N,</p>
-                <p>54.991° E</p>
-              </div>
-              <div>
-                <p>2002,</p>
-                <p>Pune</p>
-              </div>
-            </div>
-            {/* IMAGE SLIDER */}
-            <div className="absolute gap-30 p-4 backdrop-blur-sm bg-white/10 z-20 bottom-[12%] flex justify-center items-end w-full">
-
-              <ImageSlider images={images} />
-
-              {/* DESCRIPTION */}
-              <div className="w-[30%] font-noto text-base md:text-lg lg:text-2xl text-white hidden lg:flex">
-                <p>
-                  A coastal villa where the sea and sky merge, serene interiors,
-                  light, and the calm of endless horizons.
-                </p>
-              </div>
-            </div>
-
-            <img
-              src={item.img}
-              alt={item.title}
-              className="w-full h-full object-cover opacity-50"
-            />
-          </div>
-
-          <div className="work-item-name absolute top-[50%] left-[50%] -translate-y-1/2 -translate-x-1/2 w-full text-white">
-            <h1 className="uppercase text-center text-2xl md:text-3xl lg:text-5xl font-bold font-[arkhip]">
-              {item.title}
-            </h1>
-            <div className=" flex justify-center mt-4">
-              <Link to={`/projects/${item.id}`} className="project-button bg-primary hover:bg-red-700 transition-all duration-300  px-4 md:px-10 py-2 text-background font-[sansation] border border-background cursor-pointer rounded-full">
-                See Project
-              </Link>
-            </div>
-          </div>
+      {loading ? (
+        <div className="w-full flex justify-center py-20">
+          <p className="uppercase text-sm tracking-widest animate-pulse">Loading Projects...</p>
         </div>
-      ))}
+      ) : (
+        projectData.map((item, i) => (
+          <div key={i} className="work-item relative w-screen h-[150vh] overflow-hidden">
+            <div
+              className="work-item-img absolute w-full h-full bg-black"
+              style={{
+                clipPath: "polygon(25% 25%, 75% 40%, 100% 100%, 0% 100%)",
+              }}
+            >
+              <div className="absolute z-2 top-[10%]  w-full md:top-[20%] px-5 lg:px-20 text-white font-[sansation]  flex justify-between">
+                <div>
+                  <p>3.755° N,</p>
+                  <p>54.991° E</p>
+                </div>
+                <div>
+                  <p>2002,</p>
+                  <p>Pune</p>
+                </div>
+              </div>
+              {/* IMAGE SLIDER */}
+              <div className="absolute gap-30 p-4 backdrop-blur-sm bg-white/10 z-20 bottom-[12%] flex justify-center items-end w-full">
+
+                <ImageSlider images={images} />
+
+                {/* DESCRIPTION */}
+                <div className="w-[30%] font-noto text-base md:text-lg lg:text-2xl text-white hidden lg:flex">
+                  <p>
+                    A coastal villa where the sea and sky merge, serene interiors,
+                    light, and the calm of endless horizons.
+                  </p>
+                </div>
+              </div>
+
+              <img
+                src={getImageUrl(item.image)}
+                alt={item.title}
+                className="w-full h-full object-cover opacity-50"
+              />
+            </div>
+
+            <div className="work-item-name absolute top-[50%] left-[50%] -translate-y-1/2 -translate-x-1/2 w-full text-white">
+              <h1 className="uppercase text-center text-2xl md:text-3xl lg:text-5xl font-bold font-[arkhip]">
+                {item.title}
+              </h1>
+              <div className=" flex justify-center mt-4">
+                <Link to={`/projects/${item.id}`} className="project-button bg-primary hover:bg-red-700 transition-all duration-300  px-4 md:px-10 py-2 text-background font-[sansation] border border-background cursor-pointer rounded-full">
+                  See Project
+                </Link>
+              </div>
+            </div>
+          </div>
+        ))
+      )}
     </section>
   );
 };

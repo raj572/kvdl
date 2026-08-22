@@ -1,24 +1,40 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { projects } from "../../constants/projectData";
+import { getProjects, getImageUrl } from "../../services/api";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const CompletedProjects = () => {
+const OngoingProjects = () => {
+  const [projectData, setProjectData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [entranceFinished, setEntranceFinished] = useState(false);
+  const containerRef = useRef(null);
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    const fetchProjects = async () => {
+      try {
+        const res = await getProjects({ type: "ongoing" });
+        if (res.success) {
+          setProjectData(res.data);
+        }
+      } catch (err) {
+        console.error("Failed to load projects", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProjects();
   }, []);
-
-  const projectData = projects.filter((project) => project.type === "ongoing");
-  const containerRef = useRef(null);
 
   // -------------------------
   // 🔥 MAIN PAGE ZOOM ENTRANCE
   // -------------------------
   useGSAP(() => {
+    if (loading) return;
     // Disable all scrollTriggers before entrance animation
     ScrollTrigger.getAll().forEach((st) => st.disable());
 
@@ -26,17 +42,20 @@ const CompletedProjects = () => {
       .timeline({
         defaults: { ease: "power3.out", duration: 1 },
       })
-      .from(".completed-projects", {
+      .from(".ongoing-projects", {
         scale: 1.15,
         opacity: 0,
       })
       .add(() => {
         // Re-enable scrollTriggers after entrance animation finishes
         ScrollTrigger.getAll().forEach((st) => st.enable());
+        ScrollTrigger.refresh();
+        setEntranceFinished(true);
       });
-  }, []);
+  }, { dependencies: [loading] });
 
   useGSAP(() => {
+    if (loading || !entranceFinished) return;
     const rows = gsap.utils.toArray(".project-row");
 
     rows.forEach((row) => {
@@ -55,7 +74,8 @@ const CompletedProjects = () => {
         },
       });
     });
-  }, []);
+    ScrollTrigger.refresh();
+  }, { dependencies: [loading, projectData, entranceFinished] });
 
 
   const rows = [];
@@ -63,8 +83,16 @@ const CompletedProjects = () => {
     rows.push(projectData.slice(i, i + 2));
   }
 
+  if (loading) {
+    return (
+      <div className="w-full flex justify-center py-20">
+        <p className="uppercase text-sm tracking-widest animate-pulse">Loading Projects...</p>
+      </div>
+    );
+  }
+
   return (
-    <div ref={containerRef} className="completed-projects w-full pb-10">
+    <div ref={containerRef} className="ongoing-projects w-full pb-10">
       <div className="flex flex-col gap-10">
         {rows.map((row, rowIndex) => (
           <div
@@ -72,7 +100,6 @@ const CompletedProjects = () => {
             className="project-row grid grid-cols-1 sm:grid-cols-2 gap-10"
           >
             {row.map((project, colIndex) => {
-
               return (
                 <Link
                   to={`/projects/${project.id}`}
@@ -81,7 +108,7 @@ const CompletedProjects = () => {
                 >
                   <div className="work-item-img h-[50vh] md:h-[50vh] lg:h-[70vh] overflow-hidden rounded-lg">
                     <img
-                      src={project.image}
+                      src={getImageUrl(project.image)}
                       alt={project.title}
                       className="w-full h-full object-cover"
                     />
@@ -105,4 +132,4 @@ const CompletedProjects = () => {
   );
 };
 
-export default CompletedProjects;
+export default OngoingProjects;
