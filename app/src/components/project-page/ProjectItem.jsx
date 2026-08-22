@@ -348,7 +348,7 @@ const ProjectItem = () => {
                 <RedButton to={"/contact"} label={"Contact Seller"} />
                 {project.brochure && (
                   <a
-                    href={project.brochure}
+                    href={getImageUrl(project.brochure)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center px-6 py-3 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors duration-300 rounded-full font-semibold text-sm uppercase tracking-wider text-center"

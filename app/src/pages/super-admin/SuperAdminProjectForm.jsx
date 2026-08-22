@@ -60,6 +60,11 @@ const SuperAdminProjectForm = () => {
   const [brochureFile, setBrochureFile] = useState(null);
   const [existingBrochure, setExistingBrochure] = useState('');
 
+  // Floor Plans
+  const [floorplanFiles, setFloorplanFiles] = useState([]);
+  const [floorplanPreviews, setFloorplanPreviews] = useState([]);
+  const [existingFloorplans, setExistingFloorplans] = useState([]);
+
   // Highlights (Array of objects { label, value })
   const [highlights, setHighlights] = useState([
     { label: 'Units', value: '' },
@@ -89,6 +94,7 @@ const SuperAdminProjectForm = () => {
             setImagePreview(proj.image || '');
             setExistingGallery(proj.images || []);
             setExistingBrochure(proj.brochure || '');
+            setExistingFloorplans(proj.floorplan || []);
             setSelectedAmenities(proj.amneties || []);
             setHighlights(proj.highlights || [
               { label: 'Units', value: '' },
@@ -132,6 +138,24 @@ const SuperAdminProjectForm = () => {
 
   const removeExistingGalleryImage = (index) => {
     setExistingGallery(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Handle Floor Plan Select
+  const handleFloorplanChange = (e) => {
+    const files = Array.from(e.target.files);
+    setFloorplanFiles(prev => [...prev, ...files]);
+    
+    const previews = files.map(file => URL.createObjectURL(file));
+    setFloorplanPreviews(prev => [...prev, ...previews]);
+  };
+
+  const removeNewFloorplanImage = (index) => {
+    setFloorplanFiles(prev => prev.filter((_, i) => i !== index));
+    setFloorplanPreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingFloorplanImage = (index) => {
+    setExistingFloorplans(prev => prev.filter((_, i) => i !== index));
   };
 
   // Highlights management
@@ -202,8 +226,14 @@ const SuperAdminProjectForm = () => {
       formData.append('brochure_file', brochureFile);
     }
 
+    // New floorplan images
+    floorplanFiles.forEach(file => {
+      formData.append('floorplan_files[]', file);
+    });
+
     if (isEdit) {
       formData.append('existing_gallery', JSON.stringify(existingGallery));
+      formData.append('existing_floorplan', JSON.stringify(existingFloorplans));
     }
 
     try {
@@ -419,6 +449,60 @@ const SuperAdminProjectForm = () => {
                       <button
                         type="button"
                         onClick={() => removeNewGalleryImage(index)}
+                        className="absolute inset-0 bg-red-600/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white cursor-pointer"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
+
+                </div>
+              )}
+            </div>
+
+            {/* Floor Plans Upload */}
+            <div className="space-y-4 pt-4 border-t border-[#f8f0dd]/5">
+              <div className="flex items-center gap-2">
+                <label className="block text-xs uppercase tracking-widest text-[#f8f0dd]/60 font-semibold">Project Floor Plans</label>
+                <div className="group relative flex items-center">
+                  <Info size={14} className="text-[#f8f0dd]/40 cursor-help hover:text-[#f8f0dd]/80 transition-colors" />
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 bg-[#1c1c1c] border border-[#f8f0dd]/10 text-xs text-[#f8f0dd]/80 p-2 rounded shadow-xl z-10 text-center">
+                    Recommended: High-resolution images showing layouts. Max 5MB per image.
+                  </div>
+                </div>
+              </div>
+              
+              <label className="flex flex-col items-center justify-center border border-dashed border-[#f8f0dd]/15 hover:border-[#AF221F] rounded-lg p-6 cursor-pointer transition-colors bg-[#1c1c1c]">
+                <Upload size={24} className="text-[#f8f0dd]/40 mb-2" />
+                <span className="text-xs text-[#f8f0dd]/60">Add multiple floor plan photos</span>
+                <input type="file" multiple onChange={handleFloorplanChange} accept="image/*" className="hidden" />
+              </label>
+
+              {/* Display existing and new files previews */}
+              {((isEdit && existingFloorplans.length > 0) || floorplanPreviews.length > 0) && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4">
+                  
+                  {/* Existing Floorplans */}
+                  {isEdit && existingFloorplans.map((url, index) => (
+                    <div key={`existing-fp-${index}`} className="relative group border border-[#f8f0dd]/10 rounded-lg overflow-hidden h-20 bg-black">
+                      <img src={getImageUrl(url)} alt="existing floorplan preview" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => removeExistingFloorplanImage(index)}
+                        className="absolute inset-0 bg-red-600/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white cursor-pointer"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
+
+                  {/* New Previews */}
+                  {floorplanPreviews.map((url, index) => (
+                    <div key={`new-fp-${index}`} className="relative group border border-[#f8f0dd]/10 rounded-lg overflow-hidden h-20 bg-black">
+                      <img src={url} alt="new floorplan preview" className="w-full h-full object-cover opacity-85" />
+                      <button
+                        type="button"
+                        onClick={() => removeNewFloorplanImage(index)}
                         className="absolute inset-0 bg-red-600/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white cursor-pointer"
                       >
                         <Trash2 size={16} />

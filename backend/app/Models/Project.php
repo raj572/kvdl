@@ -20,6 +20,7 @@ class Project extends Model
         'amneties',
         'highlights',
         'images',
+        'floorplan',
         'brochure',
         'description',
     ];
@@ -28,5 +29,6 @@ class Project extends Model
         'amneties' => 'array',
         'highlights' => 'array',
         'images' => 'array',
+        'floorplan' => 'array',
     ];
 }

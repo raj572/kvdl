@@ -63,6 +63,7 @@ class ProjectController extends Controller
             'description' => 'nullable|string',
             'image_file' => 'nullable|image|max:5120', // Main cover file (max 5MB)
             'gallery_files.*' => 'nullable|image|max:5120', // Gallery images (max 5MB each)
+            'floorplan_files.*' => 'nullable|image|max:5120', // Floor plan images (max 5MB each)
             'amneties' => 'nullable|string', // JSON string from frontend
             'highlights' => 'nullable|string', // JSON string from frontend
             'brochure_file' => 'nullable|file|mimes:pdf|max:10240', // PDF brochure (max 10MB)
@@ -110,6 +111,16 @@ class ProjectController extends Controller
         }
         $projectData['images'] = $galleryPaths;
 
+        // Handle Floor Plans Upload
+        $floorplanPaths = [];
+        if ($request->hasFile('floorplan_files')) {
+            foreach ($request->file('floorplan_files') as $file) {
+                $path = $file->store('projects/floorplans', 'public');
+                $floorplanPaths[] = '/storage/' . $path;
+            }
+        }
+        $projectData['floorplan'] = $floorplanPaths;
+
         $project = Project::create($projectData);
 
         return response()->json([
@@ -143,9 +154,11 @@ class ProjectController extends Controller
             'description' => 'nullable|string',
             'image_file' => 'nullable|image|max:5120',
             'gallery_files.*' => 'nullable|image|max:5120',
+            'floorplan_files.*' => 'nullable|image|max:5120',
             'amneties' => 'nullable|string',
             'highlights' => 'nullable|string',
             'existing_gallery' => 'nullable|string', // JSON array of gallery URLs to keep
+            'existing_floorplan' => 'nullable|string', // JSON array of floorplan URLs to keep
             'brochure_file' => 'nullable|file|mimes:pdf|max:10240', // PDF brochure
         ]);
 
@@ -209,6 +222,23 @@ class ProjectController extends Controller
         // Merge existing and new gallery images
         $projectData['images'] = array_merge($existingGallery, $newGalleryPaths);
 
+        // Handle Floor Plans
+        $existingFloorplan = [];
+        if ($request->has('existing_floorplan')) {
+            $existingFloorplan = json_decode($request->existing_floorplan, true) ?? [];
+        }
+
+        $newFloorplanPaths = [];
+        if ($request->hasFile('floorplan_files')) {
+            foreach ($request->file('floorplan_files') as $file) {
+                $path = $file->store('projects/floorplans', 'public');
+                $newFloorplanPaths[] = '/storage/' . $path;
+            }
+        }
+
+        // Merge existing and new floor plan images
+        $projectData['floorplan'] = array_merge($existingFloorplan, $newFloorplanPaths);
+
         $project->update($projectData);
 
         return response()->json([
@@ -241,6 +271,14 @@ class ProjectController extends Controller
         // Delete gallery files
         if ($project->images && is_array($project->images)) {
             foreach ($project->images as $img) {
+                $path = str_replace('/storage/', '', $img);
+                Storage::disk('public')->delete($path);
+            }
+        }
+
+        // Delete floor plan files
+        if ($project->floorplan && is_array($project->floorplan)) {
+            foreach ($project->floorplan as $img) {
                 $path = str_replace('/storage/', '', $img);
                 Storage::disk('public')->delete($path);
             }
