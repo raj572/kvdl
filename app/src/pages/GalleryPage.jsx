@@ -3,8 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import BackButton from "../components/common/BackButton";
-import TextScroll from "../components/common/TextScroll";
+import PageHeader from "../components/common/PageHeader";
 import { galleryImages } from "../data/galleryImages";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -42,21 +41,20 @@ const Gallery = () => {
   };
 
   return (
-    <div className="gallery-page min-h-dvh">
-      {/* STICKY TOP SECTION */}
-      <div className="sticky top-[70px] md:top-[85px] z-10 w-full bg-background mt-[70px] md:mt-[85px]">
-        <TextScroll
-          text="Gallery"
-          repeat={24}
-          duration={100}
-          className="py-2 md:py-3 text-2xl md:text-4xl lg:text-5xl border-y border-foreground"
-        />
-      </div>
+    <div className="gallery-page min-h-dvh bg-background text-foreground pt-[70px] md:pt-[85px]">
+      <PageHeader
+        badge="Visual Archive"
+        title="Gallery"
+        description="Experience the artistry, craftsmanship, and architectural details that define every Kedar Vanjape Developers project."
+        breadcrumb={[
+          { label: "Home", link: "/" },
+          { label: "Gallery" }
+        ]}
+      />
 
       {/* CONTENT BELOW */}
-      <div className="gallery-hero min-h-dvh bg-background relative z-20 px-4 py-10">
-        <div className="container mx-auto flex flex-col gap-6">
-          <BackButton />
+      <div className="gallery-content min-h-[60vh] bg-background relative z-20 px-4 md:px-8 lg:px-12 pb-20">
+        <div className="max-w-7xl mx-auto flex flex-col gap-6">
           {/* Projects Grid */}
           <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4 min-h-[50vh] pt-2">
             {galleryImages

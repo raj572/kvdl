@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import CareerForm from '../components/common/CareerForm';
-import BackButton from '../components/common/BackButton';
+import PageHeader from '../components/common/PageHeader';
 
 const CareersPage = () => {
     useEffect(() => {
@@ -8,17 +8,26 @@ const CareersPage = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-foreground text-background pt-24 md:pt-32 pb-20">
-            <div className="max-w-[1400px] mx-auto px-5 md:px-10 flex flex-col gap-6">
-                <BackButton className="text-background/60 hover:text-primary" />
+        <div className="min-h-screen bg-foreground text-background pt-[70px] md:pt-[85px] pb-20">
+            <PageHeader
+                variant="dark"
+                badge="Opportunities"
+                title="Join Our Team"
+                description="Be part of a collaborative environment where talent is recognized, skills are honed, and success is a shared journey."
+                breadcrumb={[
+                    { label: "Home", link: "/" },
+                    { label: "Careers" }
+                ]}
+            />
 
+            <div className="max-w-[1400px] mx-auto px-5 md:px-10 flex flex-col gap-6 pt-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
 
                     {/* Left Column: Content */}
                     <div className="lg:sticky lg:top-32">
-                        <h1 className="text-4xl md:text-6xl font-[arkhip] uppercase mb-8 leading-tight">
-                            Join Our Team<span className="text-primary">.</span>
-                        </h1>
+                        <h2 className="text-2xl md:text-3xl font-[arkhip] uppercase mb-6 leading-tight text-background">
+                            Build Your Future With KVDL
+                        </h2>
 
                         <div className="space-y-6 text-background/80 font-[sansation] text-lg leading-relaxed">
                             <p>

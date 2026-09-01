@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import CSRCarousel from '../components/common/CSRCarousel';
 import MapSection from '../components/common/MapSection';
-import BackButton from '../components/common/BackButton';
-import TextScroll from '../components/common/TextScroll';
+import PageHeader from '../components/common/PageHeader';
 
 
 const About = () => {
@@ -19,41 +18,40 @@ const About = () => {
     window.scrollTo(0, 0);
   }, []);
   return (
-    <div className="about-page min-h-dvh">
-
-      {/* STICKY TOP SECTION — UNTOUCHED */}
-      <div className="sticky top-[70px] md:top-[85px] z-10 w-full bg-background mt-[70px] md:mt-[85px]">
-        <TextScroll
-          text="About"
-          repeat={24}
-          duration={100}
-          className="py-2 md:py-3 text-2xl md:text-4xl lg:text-5xl border-y border-foreground"
-        />
-      </div>
+    <div className="about-page min-h-dvh bg-background text-foreground pt-[70px] md:pt-[85px]">
+      <PageHeader
+        badge="Who We Are"
+        title="About KVDL"
+        description="Driven by our core philosophy of Trust, Transparency & Ethics (T2E) to redefine modern real estate standards in India."
+        breadcrumb={[
+          { label: "Home", link: "/" },
+          { label: "About" }
+        ]}
+      />
 
       {/* CONTENT BELOW */}
-      <div className="about-hero min-h-dvh bg-background relative z-20 ">
+      <div className="about-hero min-h-dvh bg-background relative z-20">
 
         {/* ABOUT SECTION */}
-        <div className="flex flex-col items-center justify-center px-6 bg-foreground text-background ">
-          <div className="max-w-6xl w-full pt-8 flex justify-start">
-            <BackButton className="text-background/60 hover:text-primary" />
-          </div>
-          <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 pb-20 pt-10">
+        <div className="flex flex-col items-center justify-center px-6 py-12 md:py-16 bg-foreground text-background">
+          <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 pb-12 pt-4">
 
             {/* IMAGE */}
             <div className="w-full flex justify-center">
               <img
                 src="/images/KVboss.webp"
                 alt="Kedar Vanjape"
-                className="w-full max-w-xs sm:max-w-sm md:max-w-md rounded-2xl shadow-lg object-cover"
+                className="w-full max-w-xs sm:max-w-sm md:max-w-md rounded-2xl shadow-2xl object-cover border border-white/10"
               />
             </div>
 
             {/* TEXT */}
             <div>
-              <h2 className="text-2xl font-bold uppercase font-[arkhip] mb-8 md:mb-10">
-                About Us
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-primary/20 text-primary border border-primary/30 mb-4 font-[sansation]">
+                Leadership & Vision
+              </div>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold uppercase font-[arkhip] mb-6 md:mb-8 text-background">
+                Leadership
               </h2>
 
               <p className="text-base md:text-lg leading-relaxed opacity-80">

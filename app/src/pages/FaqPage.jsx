@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import BackButton from '../components/common/BackButton';
+import PageHeader from '../components/common/PageHeader';
 
 const FaqItem = ({ question, answer, isOpen, onClick }) => {
     return (
@@ -69,16 +69,19 @@ const FaqPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-foreground text-background pt-24 md:pt-28 pb-10 px-4 md:px-8 lg:px-12">
-            <BackButton variant="dark" className="mb-4" />
+        <div className="min-h-screen bg-foreground text-background pt-[70px] md:pt-[85px] pb-20">
+            <PageHeader
+                variant="dark"
+                badge="Help & Guidance"
+                title="Frequently Asked Questions"
+                description="Find answers to common questions about our projects, buying process, amenities, and developer credentials."
+                breadcrumb={[
+                    { label: "Home", link: "/" },
+                    { label: "FAQs" }
+                ]}
+            />
 
-            <div className="max-w-[1000px] mx-auto flex flex-col gap-4">
-                <h1 className="text-4xl md:text-6xl font-[arkhip] uppercase text-center">
-                    Frequently Asked Questions<span className="text-primary">.</span>
-                </h1>
-                <p className="text-center text-background/60 font-[sansation] mb-8 max-w-2xl mx-auto">
-                    Find answers to common questions about our projects, buying process, and services.
-                </p>
+            <div className="max-w-[1000px] mx-auto px-4 md:px-8 lg:px-12 pt-6 flex flex-col gap-4">
 
                 <div className="flex flex-col">
                     {faqs.map((faq, index) => (

@@ -1,12 +1,16 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import BackButton from '../components/common/BackButton';
-import TextScroll from '../components/common/TextScroll';
+import PageHeader from '../components/common/PageHeader';
 import { getImageUrl } from '../services/api';
 import { useGetBlogsQuery } from '../services/blogsApi';
 
 const BlogPage = () => {
   const { data: blogsData, isLoading: loading, error, refetch } = useGetBlogsQuery();
   const blogs = Array.isArray(blogsData?.data) ? blogsData.data : [];
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const getExcerpt = (content) => {
     if (!content) return '';
@@ -27,21 +31,20 @@ const BlogPage = () => {
   };
 
   return (
-    <div className="blog-page min-h-dvh">
-      {/* STICKY TOP SECTION */}
-      <div className="sticky top-[70px] md:top-[85px] z-10 w-full bg-background mt-[70px] md:mt-[85px]">
-        <TextScroll
-          text="Stories"
-          repeat={24}
-          duration={100}
-          className="py-2 md:py-3 text-2xl md:text-4xl lg:text-5xl border-y border-foreground"
-        />
-      </div>
+    <div className="blog-page min-h-dvh bg-background text-foreground pt-[70px] md:pt-[85px]">
+      <PageHeader
+        badge="Journal & Insights"
+        title="Stories & Insights"
+        description="Discover our latest perspectives on modern architecture, urban living, community development, and updates from the KVDL team."
+        breadcrumb={[
+          { label: "Home", link: "/" },
+          { label: "Stories" }
+        ]}
+      />
 
       {/* CONTENT BELOW */}
-      <div className="blog-hero min-h-dvh bg-background relative z-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-12 md:pt-12 md:pb-20 lg:pt-16 lg:pb-24 flex flex-col gap-6">
-          <BackButton />
+      <div className="blog-content min-h-[60vh] bg-background relative z-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-16 pb-20 md:pb-24 flex flex-col gap-6">
 
           {loading && (
             <div className="flex justify-center py-20">

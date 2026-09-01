@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import ContactForm from '../components/common/ContactForm';
 import MapSection from '../components/common/MapSection';
-import SectionHeader from '../components/common/SectionHeader';
-import BackButton from '../components/common/BackButton';
+import PageHeader from '../components/common/PageHeader';
 
 const ContactPage = () => {
   useEffect(() => {
@@ -37,18 +36,17 @@ const ContactPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-foreground text-background font-[sansation] pt-24 md:pt-28">
-      <div className="max-w-[1400px] mx-auto px-5">
-        <BackButton className="text-background/60 hover:text-primary" />
-      </div>
-
+    <div className="min-h-screen bg-foreground text-background font-[sansation] pt-[70px] md:pt-[85px]">
       {/* Header Section */}
-      <SectionHeader
+      <PageHeader
+        variant="dark"
+        badge="Reach Out"
         title="Get In Touch"
         description="Have questions about our properties or want to schedule a visit? We're here to help you find your dream home."
-        className="text-background border-b border-background/10"
-        linkText="Home"
-        linkTo="/"
+        breadcrumb={[
+          { label: "Home", link: "/" },
+          { label: "Contact" }
+        ]}
       />
 
       {/* Main Content Split */}
