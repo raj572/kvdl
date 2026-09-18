@@ -7,12 +7,14 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\CareerApplicationController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\PodcastController;
 
 // Public Routes
 Route::post('/contact', [ContactController::class, 'store']);
 Route::post('/careers/apply', [CareerApplicationController::class, 'store']);
 Route::get('/projects', [ProjectController::class, 'index']);
 Route::get('/projects/{id}', [ProjectController::class, 'show']);
+Route::get('/podcasts', [PodcastController::class, 'index']);
 
 // Admin Authentication (Rate Limited)
 Route::middleware(['throttle:60,1'])->group(function () {
@@ -35,7 +37,14 @@ Route::middleware('admin.auth')->prefix('admin')->group(function () {
     Route::get('/careers', [CareerApplicationController::class, 'index']);
     Route::patch('/careers/{id}', [CareerApplicationController::class, 'update']);
     Route::get('/careers/{id}/resume', [CareerApplicationController::class, 'downloadResume']);
+
+    // Podcast Management Routes
+    Route::get('/podcasts', [PodcastController::class, 'adminIndex']);
+    Route::post('/podcasts', [PodcastController::class, 'store']);
+    Route::post('/podcasts/{id}', [PodcastController::class, 'update']);
+    Route::delete('/podcasts/{id}', [PodcastController::class, 'destroy']);
 });
+
 
 // Super-Admin Protected Routes
 Route::middleware('super_admin.auth')->prefix('super-admin')->group(function () {

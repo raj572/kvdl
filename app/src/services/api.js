@@ -127,6 +127,63 @@ export const getContacts = async () => {
 };
 
 /**
+ * Get active podcasts (public)
+ * @returns {Promise} - Response data
+ */
+export const getPodcasts = async () => {
+    return apiRequest('/api/podcasts', {
+        method: 'GET',
+    });
+};
+
+/**
+ * Get all podcasts (admin)
+ * @returns {Promise} - Response data
+ */
+export const getAdminPodcasts = async () => {
+    return apiRequest('/api/admin/podcasts', {
+        method: 'GET',
+    });
+};
+
+/**
+ * Create a new podcast (admin)
+ * @param {object} podcastData - Podcast payload (youtube_url, title, description, sort_order, is_active)
+ * @returns {Promise} - Response data
+ */
+export const createPodcast = async (podcastData) => {
+    return apiRequest('/api/admin/podcasts', {
+        method: 'POST',
+        body: JSON.stringify(podcastData),
+    });
+};
+
+/**
+ * Update an existing podcast (admin)
+ * @param {number|string} id - Podcast ID
+ * @param {object} podcastData - Podcast payload
+ * @returns {Promise} - Response data
+ */
+export const updatePodcast = async (id, podcastData) => {
+    return apiRequest(`/api/admin/podcasts/${id}`, {
+        method: 'POST',
+        body: JSON.stringify(podcastData),
+    });
+};
+
+/**
+ * Delete a podcast (admin)
+ * @param {number|string} id - Podcast ID
+ * @returns {Promise} - Response data
+ */
+export const deletePodcast = async (id) => {
+    return apiRequest(`/api/admin/podcasts/${id}`, {
+        method: 'DELETE',
+    });
+};
+
+
+/**
  * Get all blogs (for admin or public)
  * @returns {Promise} - Response data
  */
@@ -278,6 +335,11 @@ export const deleteProject = async (id) => {
 export default {
     submitContactForm,
     getContacts,
+    getPodcasts,
+    getAdminPodcasts,
+    createPodcast,
+    updatePodcast,
+    deletePodcast,
     getBlogs,
     createBlog,
     updateBlog,
@@ -293,3 +355,4 @@ export default {
     updateProject,
     deleteProject,
 };
+

@@ -13,6 +13,7 @@ import AdminContacts from "./pages/admin/AdminContacts";
 import AdminCreateBlog from "./pages/admin/AdminCreateBlog";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminManageBlogs from "./pages/admin/AdminManageBlogs";
+import AdminPodcasts from "./pages/admin/AdminPodcasts";
 import BlogInternalPage from "./pages/BlogInternalPage";
 import BlogPage from "./pages/BlogPage";
 import CareersPage from "./pages/CareersPage";
@@ -155,6 +156,7 @@ const router = createBrowserRouter([
               { path: "blogs/preview", element: <AdminBlogPreview /> },
               { path: "blogs/edit/:id", element: <AdminCreateBlog /> },
               { path: "blogs/manage", element: <AdminManageBlogs /> },
+              { path: "podcasts", element: <AdminPodcasts /> },
               { path: "contacts", element: <AdminContacts /> },
               { path: "careers", element: <AdminCareers /> }
             ]

@@ -1,10 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import CSRCarousel from '../components/common/CSRCarousel';
 import MapSection from '../components/common/MapSection';
 import PageHeader from '../components/common/PageHeader';
+import { getPodcasts } from '../services/api';
 
 
 const About = () => {
+  const [podcasts, setPodcasts] = useState([]);
+  const [loadingPodcasts, setLoadingPodcasts] = useState(true);
+
   const csrImages = [
     { src: '/images/csr1.webp', alt: 'CSR Activity 1' },
     { src: '/images/csr2.webp', alt: 'CSR Activity 2' },
@@ -16,7 +20,23 @@ const About = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    const loadPodcasts = async () => {
+      try {
+        const res = await getPodcasts();
+        if (res?.success && res.data) {
+          setPodcasts(res.data);
+        }
+      } catch (err) {
+        console.error("Failed to load podcasts:", err);
+      } finally {
+        setLoadingPodcasts(false);
+      }
+    };
+
+    loadPodcasts();
   }, []);
+
   return (
     <div className="about-page min-h-dvh bg-background text-foreground pt-[70px] md:pt-[85px]">
       <PageHeader
@@ -113,28 +133,29 @@ const About = () => {
           <div className="max-w-6xl mx-auto">
             <h2 className="text-2xl font-bold uppercase font-[arkhip] mb-10">Podcasts</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-              <iframe
-                className="w-full h-52 sm:h-64 md:h-56 rounded-xl shadow-md"
-                src="https://www.youtube.com/embed/J9OqGmP_mXo"
-                allowFullScreen
-              />
-
-              <iframe
-                className="w-full h-52 sm:h-64 md:h-56 rounded-xl shadow-md"
-                src="https://www.youtube.com/embed/QHxQakKyVtU"
-                allowFullScreen
-              />
-
-              <iframe
-                className="w-full h-52 sm:h-64 md:h-56 rounded-xl shadow-md"
-                src="https://www.youtube.com/embed/N3IfqpBL4uQ"
-                allowFullScreen
-              />
-            </div>
+            {loadingPodcasts ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {[1, 2, 3].map((n) => (
+                  <div key={n} className="w-full h-52 sm:h-64 md:h-56 bg-gray-800/20 rounded-xl animate-pulse" />
+                ))}
+              </div>
+            ) : podcasts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {podcasts.map((podcast) => (
+                  <div key={podcast.id} className="flex flex-col space-y-2">
+                    <iframe
+                      className="w-full h-52 sm:h-64 md:h-56 rounded-xl shadow-md border border-white/10"
+                      src={`https://www.youtube.com/embed/${podcast.video_id}`}
+                      title="Podcast Video"
+                      allowFullScreen
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : null}
           </div>
         </div>
+
 
 
 

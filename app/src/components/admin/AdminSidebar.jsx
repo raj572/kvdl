@@ -16,6 +16,7 @@ const AdminSidebar = () => {
     const navItems = [
         { name: "Dashboard", path: "/admin/dashboard" },
         { name: "Blogs", path: "/admin/blogs/manage", matcher: "/admin/blogs" },
+        { name: "Podcasts", path: "/admin/podcasts" },
         { name: "Inquiries", path: "/admin/contacts" },
         { name: "Careers", path: "/admin/careers" },
     ];
@@ -81,11 +82,18 @@ const AdminSidebar = () => {
                     })}
                 </nav>
 
-                {/* Logout Area */}
-                <div className="p-8 border-t border-white/10">
+                {/* Actions Area */}
+                <div className="p-8 border-t border-white/10 space-y-3">
+                    <Link
+                        to="/"
+                        onClick={closeMobileMenu}
+                        className="flex items-center justify-center w-full px-6 py-3 border-2 border-white/20 text-white hover:bg-white/10 hover:border-white/40 rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
+                    >
+                        View Landing Page
+                    </Link>
                     <button
                         onClick={handleLogout}
-                        className="w-full px-6 py-4 border-2 border-white/20 text-white hover:bg-red-600 hover:border-red-600 rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
+                        className="w-full px-6 py-3 border-2 border-white/20 text-white hover:bg-red-600 hover:border-red-600 rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
                     >
                         Logout
                     </button>
@@ -127,11 +135,17 @@ const AdminSidebar = () => {
                     })}
                 </nav>
 
-                {/* Logout Area */}
-                <div className="p-8 border-t border-white/10">
+                {/* Actions Area */}
+                <div className="p-8 border-t border-white/10 space-y-3">
+                    <Link
+                        to="/"
+                        className="flex items-center justify-center w-full px-6 py-3 border-2 border-white/20 text-white hover:bg-white/10 hover:border-white/40 rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
+                    >
+                        View Landing Page
+                    </Link>
                     <button
                         onClick={handleLogout}
-                        className="w-full px-6 py-4 border-2 border-white/20 text-white hover:bg-red-600 hover:border-red-600 rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
+                        className="w-full px-6 py-3 border-2 border-white/20 text-white hover:bg-red-600 hover:border-red-600 rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
                     >
                         Logout
                     </button>
